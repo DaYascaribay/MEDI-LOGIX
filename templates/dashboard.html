@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Historial Médico - Medi Logix</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="header">
+            <div class="logo-area">
+                <img src="{{ url_for('static', filename='medico.png') }}" alt="Logo" class="logo-icon">
+                <span class="logo-text">MEDI LOGIX</span>
+                <button class="add-pac-btn" onclick="openModal()">AÑADIR PACIENTE</button>
+            </div>
+
+            <div class="search-area">
+                <input type="text" placeholder="Buscar">
+                <button>BUSCAR</button>
+            </div>
+        </header>
+
+        <main class="main-panel">
+            <aside class="patient-info">
+                <div class="info-header">
+                    <h3>Datos del paciente</h3>
+                    <svg class="edit-icon" xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" fill="#000">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+                    </svg>
+                </div>
+                <p><strong>Cédula/Pasaporte</strong><br>1711576786</p>
+                <p><strong>Nombres Completos</strong><br>Pedro Pascal Pereira Ríos</p>
+                <div class="flex-info">
+                    <p><strong>Edad</strong><br>45</p>
+                    <p><strong>Sexo</strong><br>M</p>
+                </div>
+                <p><strong>Teléfono</strong><br>0969456489</p>
+                <p><strong>Número de historia clínica</strong><br>HC-00126463</p>
+            </aside>
+
+            <section class="cases-panel">
+                <div class="cases-header">
+                    <h3>Casos Médicos asociados</h3>
+                    <button class="add-case-btn" title="Agregar nuevo caso" onclick="openCaseModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24" fill="#000" viewBox="0 0 24 24">
+                            <path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                    </button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Diagnóstico</th>
+                            <th>Médico Tratante</th>
+                            <th>Tratamiento</th>
+                            <th>Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>01/08/2024</td>
+                            <td>Lesión por rodilla</td>
+                            <td>Dra. Lucia Rosero</td>
+                            <td>Antiinflamatorios</td>
+                            <td>Se sugiere resonancia magnética si persiste el dolor</td>
+                        </tr>
+                        <tr>
+                            <td>02/09/2024</td>
+                            <td>Hipertensión arterial</td>
+                            <td>Dr. Mario Romero</td>
+                            <td>Losartán 50 mg diarios</td>
+                            <td>Control mensual, dieta baja en sodio</td>
+                        </tr>
+                        <tr>
+                            <td>03/10/2024</td>
+                            <td>Faringitis aguda</td>
+                            <td>Dr. Miguel Torres</td>
+                            <td>Amoxicilina 500mg cada 8h por 7 días</td>
+                            <td>Reposo recomendado, control en 5 días</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Añadir Paciente -->
+    <div id="addPatientModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <div class="circle-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" fill="black">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+                    </svg>
+                </div>
+                <h2>Añadir Paciente</h2>
+            </div>
+            <form class="modal-form">
+                <label>Cédula/Pasaporte</label>
+                <input class="input1" type="text" placeholder="Ej: 1711576786" required>
+
+                <label>Nombres Completos</label>
+                <input class="input1" type="text" placeholder="Ej: Pedro Pascal Pereira Ríos" required>
+
+                <div class="form-row">
+                    <div>
+                        <label>Fecha de Nacimiento</label>
+                        <input type="date" required class="input1">
+                    </div>
+                    <div>
+                        <label>Sexo</label>
+                        <br>
+                        <select required class="input1">
+                            <option value="">Seleccione</option>
+                            <option>M</option>
+                            <option>F</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label>Teléfono</label>
+                <input class="input1" type="text" placeholder="Ej: 0991234567" required>
+
+                <label>Correo Electrónico</label>
+                <input class="input1" type="email" placeholder="Ej: ejemplo@correo.com" required>
+
+                <button type="submit" class="save-btn1">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Editar Paciente -->
+    <div id="editPatientModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <div class="modal-header">
+                <div class="circle-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" fill="black">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+                    </svg>
+                </div>
+                <h2>Editar Paciente</h2>
+            </div>
+            <form class="modal-form">
+                <label>Cédula/Pasaporte</label>
+                <input class="input1" type="text" value="1711576786" readonly>
+
+                <label>Nombres Completos</label>
+                <input class="input1" type="text" value="Pedro Pascal Pereira Ríos" readonly>
+
+                <div class="form-row">
+                    <div>
+                        <label>Fecha de Nacimiento</label>
+                        <input type="date" value="1980-01-01" readonly class="input1">
+                    </div>
+                    <div>
+                        <label>Sexo</label>
+                        <br>
+                        <select disabled class="input1">
+                            <option selected>M</option>
+                            <option>F</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label>Teléfono</label>
+                <input class="input1" type="text" value="0969456489">
+
+                <label>Correo Electrónico</label>
+                <input class="input1" type="email" value="ejemplo@correo.com">
+
+                <div class="button-group">
+                    <button type="button" class="delete-btn">Eliminar</button>
+                    <button type="submit" class="save-btn">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Añadir Caso -->
+    <div id="addCaseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCaseModal()">&times;</span>
+            <div class="modal-header">
+                <div class="circle-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" fill="black">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+                    </svg>
+                </div>
+                <h2>Añadir Caso</h2>
+            </div>
+            <form class="modal-form">
+                <label>Fecha</label>
+                <input class="input1" type="date" required>
+
+                <label>Diagnóstico</label>
+                <input class="input1" type="text" placeholder="Ej: Hipertensión arterial" required>
+
+                <label>Médico tratante</label>
+                <input class="input1" type="text" readonly>
+
+                <label>Tratamiento</label>
+                <input class="input1" type="text" placeholder="Ej: Losartán 50mg diarios" required>
+
+                <label>Observaciones</label>
+                <input class="input1" type="text" placeholder="Ej: Control mensual" required>
+
+                <div class="button-group">
+                    <button type="submit" class="save-btn">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Simula médico logueado
+        const medicoActual = "Dr. Mario Romero";
+
+        // Modal Añadir Paciente
+        function openModal() {
+            document.getElementById("addPatientModal").style.display = "block";
+        }
+        function closeModal() {
+            document.getElementById("addPatientModal").style.display = "none";
+        }
+
+        // Modal Editar Paciente
+        function openEditModal() {
+            document.getElementById("editPatientModal").style.display = "block";
+        }
+        function closeEditModal() {
+            document.getElementById("editPatientModal").style.display = "none";
+        }
+
+        // Modal Añadir Caso
+        function openCaseModal() {
+            document.getElementById("addCaseModal").style.display = "block";
+            // Set medico actual en campo readonly
+            const medicoInput = document.querySelector("#addCaseModal input[readonly]");
+            if(medicoInput){
+                medicoInput.value = medicoActual;
+            }
+        }
+        function closeCaseModal() {
+            document.getElementById("addCaseModal").style.display = "none";
+        }
+
+        // Cerrar modales al click fuera
+        window.addEventListener("click", function(event) {
+            if (event.target === document.getElementById("addPatientModal")) {
+                closeModal();
+            } else if (event.target === document.getElementById("editPatientModal")) {
+                closeEditModal();
+            } else if (event.target === document.getElementById("addCaseModal")) {
+                closeCaseModal();
+            }
+        });
+
+        // Abrir modal editar paciente al hacer click en icono lápiz
+        document.addEventListener("DOMContentLoaded", () => {
+            const editIcon = document.querySelector(".edit-icon");
+            if(editIcon){
+                editIcon.addEventListener("click", openEditModal);
+            }
+        });
+    </script>
+</body>
+</html>

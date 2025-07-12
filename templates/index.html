@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Medi Logix</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo Medi Logix" class="logo">
+            <h2>Iniciar Sesión</h2>
+            <form>
+                <input type="text" placeholder="Usuario o correo" required>
+                <input type="password" placeholder="Contraseña" id="password" required>
+                <label class="show-password">
+                    <input type="checkbox" onclick="togglePassword()"> Mostrar contraseña
+                </label>
+                <button type="submit">Ingresar</button>
+            </form>
+            <p class="note">Personal Médico</p>
+        </div>
+        <div class="image-box">
+            <img src="{{ url_for('static', filename='medico.png') }}" alt="Médico" class="doctor-image">
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById("password");
+            passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+        }
+    </script>
+</body>
+</html>
