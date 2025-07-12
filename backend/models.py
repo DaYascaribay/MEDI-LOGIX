@@ -8,6 +8,16 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     rol = db.Column(db.String(20), nullable=False)
 
+    # Agregar estas columnas:
+    nombre = db.Column(db.String(100), nullable=True)
+    apellido = db.Column(db.String(100), nullable=True)
+    correo = db.Column(db.String(100), nullable=True)
+    especialidad = db.Column(db.String(100), nullable=True)
+    fecha_nac = db.Column(db.Date, nullable=True)
+    telefono = db.Column(db.String(20), nullable=True)
+
+
+
 class Paciente(db.Model):
     __tablename__ = 'pacientes'
     id = db.Column(db.Integer, primary_key=True)
@@ -17,8 +27,8 @@ class Paciente(db.Model):
     sexo = db.Column(db.String(1), nullable=False)
     telefono = db.Column(db.String(20))
     correo = db.Column(db.String(100))
+    casos = db.relationship('CasoClinico', backref='paciente', lazy=True, cascade="all, delete-orphan")
 
-    casos = db.relationship('CasoClinico', backref='paciente', lazy=True)
 
 # models.py
 

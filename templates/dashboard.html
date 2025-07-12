@@ -170,7 +170,8 @@
             </div>
             <form class="modal-form" id="addCaseForm">
                 <label>Fecha</label>
-                <input class="input1" type="date" required>
+                <input class="input1" type="date" id="fechaCasoHoy" required>
+
 
                 <label>Diagnóstico</label>
                 <input class="input1" type="text" placeholder="Ej: Hipertensión arterial" required>
@@ -242,7 +243,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-
 // --- AÑADIR PACIENTE ---
 document.querySelector('#addPatientModal form').addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -309,6 +309,7 @@ document.querySelector('#addPatientModal form').addEventListener('submit', async
 
         } else {
             mostrarAlerta(result.mensaje || "Error al registrar paciente");
+
         }
 
     } catch (err) {

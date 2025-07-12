@@ -18,9 +18,13 @@ def login():
     user = User.query.filter_by(usuario=username).first()
 
     if user and check_password_hash(user.password, password):
-        token = create_access_token(identity=str(user.id))  # SOLO el ID como string
+        # Incluye el rol como "claim", pero deja identity limpio (solo el ID)
+        additional_claims = {"rol": user.rol}
+        token = create_access_token(identity=str(user.id), additional_claims=additional_claims)
+
         return jsonify({
             "token": token,
+            "rol": user.rol,  # <-- para que el frontend pueda usarlo también si quiere
             "mensaje": "Acceso exitoso"
         }), 200
     else:
