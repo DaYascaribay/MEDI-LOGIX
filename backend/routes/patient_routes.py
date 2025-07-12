@@ -1,0 +1,105 @@
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
+from models import Paciente
+from extensions import db
+from datetime import datetime
+from sqlalchemy.exc import IntegrityError
+import random
+
+patient_bp = Blueprint('patient', __name__)
+
+@patient_bp.route('/add', methods=['POST'])
+@jwt_required()
+def add_patient():
+    data = request.get_json()
+    try:
+        # Validar formato de fecha
+        try:
+            fecha = datetime.strptime(data['fecha_nac'], '%Y-%m-%d')
+        except ValueError:
+            return jsonify({"mensaje": "Formato de fecha inválido. Use AAAA-MM-DD"}), 422
+
+        paciente = Paciente(
+            cedula=data['cedula'],
+            nombres=data['nombres'],
+            fecha_nac=fecha,
+            sexo=data['sexo'],
+            telefono=data.get('telefono', ''),
+            correo=data.get('correo', '')
+        )
+
+        db.session.add(paciente)
+        db.session.commit()
+        return jsonify({
+            "mensaje": "Paciente registrado correctamente",
+            "id": paciente.id  # <-- añadir esto
+        }), 201
+
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({"mensaje": "Ya existe un paciente con esa cédula"}), 409  # HTTP 409 Conflict
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"mensaje": f"Error al registrar paciente: {str(e)}"}), 500
+
+
+@patient_bp.route('/list', methods=['GET'])
+@jwt_required()
+def listar_pacientes():
+    pacientes = Paciente.query.all()
+    resultado = [
+        {
+            "id": p.id,
+            "cedula": p.cedula,
+            "nombres": p.nombres,
+            "fecha_nac": str(p.fecha_nac),
+            "sexo": p.sexo,
+            "telefono": p.telefono,
+            "correo": p.correo
+        } for p in pacientes
+    ]
+    return jsonify(resultado)
+
+@patient_bp.route('/delete/<int:id>', methods=['DELETE'])
+@jwt_required()
+def eliminar_paciente(id):
+    paciente = Paciente.query.get(id)
+    if not paciente:
+        return jsonify({"mensaje": "Paciente no encontrado"}), 404
+    db.session.delete(paciente)
+    db.session.commit()
+    return jsonify({"mensaje": "Paciente eliminado"})
+
+@patient_bp.route('/update/<int:id>', methods=['PUT'])
+@jwt_required()
+def actualizar_paciente(id):
+    paciente = Paciente.query.get(id)
+    if not paciente:
+        return jsonify({"mensaje": "Paciente no encontrado"}), 404
+
+    data = request.get_json()
+    try:
+        paciente.telefono = data.get('telefono', paciente.telefono)
+        paciente.correo = data.get('correo', paciente.correo)
+        db.session.commit()
+        return jsonify({"mensaje": "Datos del paciente actualizados"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"mensaje": f"Error al actualizar: {str(e)}"}), 500
+
+@patient_bp.route('/search/<cedula>', methods=['GET'])
+@jwt_required()
+def buscar_por_cedula(cedula):
+    paciente = Paciente.query.filter_by(cedula=cedula).first()
+    if not paciente:
+        return jsonify({"mensaje": "Paciente no encontrado"}), 404
+    return jsonify({
+        "id": paciente.id,
+        "cedula": paciente.cedula,
+        "nombres": paciente.nombres,
+        "fecha_nac": str(paciente.fecha_nac),
+        "sexo": paciente.sexo,
+        "telefono": paciente.telefono,
+        "correo": paciente.correo
+    })

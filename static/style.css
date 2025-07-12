@@ -369,3 +369,35 @@ tbody tr:nth-child(even) {
     margin-top: 5px;
     gap: 25px;
 }
+
+#mensajeAlerta {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    background-color: #1a73e8; /* Azul institucional */
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-weight: bold;
+    display: none;
+    max-width: 320px;
+    animation: fadeInOut 3s ease forwards;
+    font-family: "Arial", sans-serif;
+    font-size: 14px;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+#mensajeAlerta.error {
+    background-color: #e53935; /* Rojo fuerte para errores */
+}
+
+
+@keyframes fadeInOut {
+    0%   { opacity: 0; transform: translateY(-10px); }
+    10%  { opacity: 1; transform: translateY(0); }
+    90%  { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-10px); }
+}

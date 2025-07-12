@@ -15,29 +15,20 @@
             </div>
 
             <div class="search-area">
-                <input type="text" placeholder="Buscar">
-                <button>BUSCAR</button>
+                <input type="text" id="searchCedula" placeholder="Buscar por cédula">
+                <button id="btnBuscarPaciente">BUSCAR</button>
             </div>
+
         </header>
 
         <main class="main-panel">
             <aside class="patient-info">
                 <div class="info-header">
                     <h3>Datos del paciente</h3>
-                    <svg class="edit-icon" xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" fill="#000">
-                        <path d="M0 0h24v24H0z" fill="none"/>
-                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
-                    </svg>
                 </div>
-                <p><strong>Cédula/Pasaporte</strong><br>1711576786</p>
-                <p><strong>Nombres Completos</strong><br>Pedro Pascal Pereira Ríos</p>
-                <div class="flex-info">
-                    <p><strong>Edad</strong><br>45</p>
-                    <p><strong>Sexo</strong><br>M</p>
-                </div>
-                <p><strong>Teléfono</strong><br>0969456489</p>
-                <p><strong>Número de historia clínica</strong><br>HC-00126463</p>
+                <p style="text-align: center; color: #666; margin-top: 1rem;">No hay paciente seleccionado</p>
             </aside>
+
 
             <section class="cases-panel">
                 <div class="cases-header">
@@ -59,27 +50,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>01/08/2024</td>
-                            <td>Lesión por rodilla</td>
-                            <td>Dra. Lucia Rosero</td>
-                            <td>Antiinflamatorios</td>
-                            <td>Se sugiere resonancia magnética si persiste el dolor</td>
-                        </tr>
-                        <tr>
-                            <td>02/09/2024</td>
-                            <td>Hipertensión arterial</td>
-                            <td>Dr. Mario Romero</td>
-                            <td>Losartán 50 mg diarios</td>
-                            <td>Control mensual, dieta baja en sodio</td>
-                        </tr>
-                        <tr>
-                            <td>03/10/2024</td>
-                            <td>Faringitis aguda</td>
-                            <td>Dr. Miguel Torres</td>
-                            <td>Amoxicilina 500mg cada 8h por 7 días</td>
-                            <td>Reposo recomendado, control en 5 días</td>
-                        </tr>
                     </tbody>
                 </table>
             </section>
@@ -99,7 +69,7 @@
                 </div>
                 <h2>Añadir Paciente</h2>
             </div>
-            <form class="modal-form">
+            <form class="modal-form" id="addPatientForm">
                 <label>Cédula/Pasaporte</label>
                 <input class="input1" type="text" placeholder="Ej: 1711576786" required>
 
@@ -116,8 +86,8 @@
                         <br>
                         <select required class="input1">
                             <option value="">Seleccione</option>
-                            <option>M</option>
-                            <option>F</option>
+                            <option value="M">M</option>
+                            <option value="F">F</option>
                         </select>
                     </div>
                 </div>
@@ -161,10 +131,12 @@
                     <div>
                         <label>Sexo</label>
                         <br>
-                        <select disabled class="input1">
-                            <option selected>M</option>
-                            <option>F</option>
+                        <select required class="input1">
+                            <option value="">Seleccione</option>
+                            <option value="M">M</option>
+                            <option value="F">F</option>
                         </select>
+
                     </div>
                 </div>
 
@@ -175,7 +147,8 @@
                 <input class="input1" type="email" value="ejemplo@correo.com">
 
                 <div class="button-group">
-                    <button type="button" class="delete-btn">Eliminar</button>
+                    <button type="button" class="delete-btn" id="btnEliminarPaciente">Eliminar</button>
+
                     <button type="submit" class="save-btn">Guardar</button>
                 </div>
             </form>
@@ -195,7 +168,7 @@
                 </div>
                 <h2>Añadir Caso</h2>
             </div>
-            <form class="modal-form">
+            <form class="modal-form" id="addCaseForm">
                 <label>Fecha</label>
                 <input class="input1" type="date" required>
 
@@ -218,57 +191,505 @@
         </div>
     </div>
 
-    <script>
-        // Simula médico logueado
-        const medicoActual = "Dr. Mario Romero";
+<script>
+const medicoActual = "Dr. Mario Romero";
 
-        // Modal Añadir Paciente
-        function openModal() {
-            document.getElementById("addPatientModal").style.display = "block";
-        }
-        function closeModal() {
-            document.getElementById("addPatientModal").style.display = "none";
+function openModal() {
+    const form = document.getElementById("addPatientForm");
+    form.reset();
+
+    const select = form.querySelector("select");
+    if (select) select.selectedIndex = 0;
+
+    const dateInput = form.querySelector("input[type='date']");
+    if (dateInput) dateInput.value = "";
+
+    document.getElementById("addPatientModal").style.display = "block";
+}
+
+function closeModal() {
+    document.getElementById("addPatientModal").style.display = "none";
+}
+
+function openEditModal() {
+    cargarDatosEnModalEdicion();
+    document.getElementById("editPatientModal").style.display = "block";
+}
+
+
+function closeEditModal() {
+    document.getElementById("editPatientModal").style.display = "none";
+}
+
+function openCaseModal() {
+    document.getElementById("addCaseModal").style.display = "block";
+    const medicoInput = document.querySelector("#addCaseModal input[readonly]");
+    if (medicoInput) medicoInput.value = medicoActual;
+}
+function closeCaseModal() {
+    document.getElementById("addCaseModal").style.display = "none";
+}
+
+window.addEventListener("click", function (event) {
+    if (event.target === document.getElementById("addPatientModal")) closeModal();
+    if (event.target === document.getElementById("editPatientModal")) closeEditModal();
+    if (event.target === document.getElementById("addCaseModal")) closeCaseModal();
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const editIcon = document.querySelector(".edit-icon");
+    if (editIcon) editIcon.addEventListener("click", openEditModal);
+});
+
+
+
+// --- AÑADIR PACIENTE ---
+document.querySelector('#addPatientModal form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const form = document.getElementById("addPatientForm");
+
+    const cedula = form.querySelector('input[type="text"]:nth-of-type(1)').value.trim();
+    const nombres = form.querySelector('input[type="text"]:nth-of-type(2)').value.trim();
+    const fechaRaw = form.querySelector('input[type="date"]').value;
+    const sexo = form.querySelector('select').value;
+    const telefono = form.querySelector('input[type="text"]:nth-of-type(3)').value.trim();
+    const correo = form.querySelector('input[type="email"]').value.trim();
+
+    if (!cedula || !nombres || !fechaRaw || !sexo || !telefono || !correo) {
+        return alert("Todos los campos son obligatorios");
+    }
+
+    let fechaFormateada;
+    try {
+        fechaFormateada = new Date(fechaRaw).toISOString().split("T")[0];
+    } catch {
+        return alert("Fecha inválida");
+    }
+
+    const data = {
+        cedula,
+        nombres,
+        fecha_nac: fechaFormateada,
+        sexo,
+        telefono,
+        correo
+    };
+
+    const token = localStorage.getItem("token");
+    if (!token) return alert("Sesión no válida");
+
+    try {
+        const res = await fetch("http://localhost:777/api/patient/add", {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+            mostrarAlerta("Paciente registrado correctamente");
+
+            // Limpiar formulario
+            form.reset();
+            const select = form.querySelector("select");
+            if (select) select.selectedIndex = 0;
+            const dateInput = form.querySelector("input[type='date']");
+            if (dateInput) dateInput.value = "";
+
+            closeModal();
+            localStorage.removeItem("paciente_id");
+            limpiarTablaCasos();
+            actualizarPanelPaciente({ ...data, id: result.id });
+            localStorage.setItem("paciente_id", result.id);  // <-- importante
+
+
+        } else {
+            mostrarAlerta(result.mensaje || "Error al registrar paciente");
         }
 
-        // Modal Editar Paciente
-        function openEditModal() {
-            document.getElementById("editPatientModal").style.display = "block";
-        }
-        function closeEditModal() {
-            document.getElementById("editPatientModal").style.display = "none";
-        }
+    } catch (err) {
+        console.error(err);
+        mostrarAlerta("Error al conectar con el servidor");
+    }
+});
 
-        // Modal Añadir Caso
-        function openCaseModal() {
-            document.getElementById("addCaseModal").style.display = "block";
-            // Set medico actual en campo readonly
-            const medicoInput = document.querySelector("#addCaseModal input[readonly]");
-            if(medicoInput){
-                medicoInput.value = medicoActual;
-            }
-        }
-        function closeCaseModal() {
-            document.getElementById("addCaseModal").style.display = "none";
-        }
 
-        // Cerrar modales al click fuera
-        window.addEventListener("click", function(event) {
-            if (event.target === document.getElementById("addPatientModal")) {
-                closeModal();
-            } else if (event.target === document.getElementById("editPatientModal")) {
-                closeEditModal();
-            } else if (event.target === document.getElementById("addCaseModal")) {
-                closeCaseModal();
+// FUNCIONES AUXILIARES
+
+function actualizarPanelPaciente(paciente) {
+    const panel = document.querySelector('.patient-info');
+    const edad = calcularEdad(paciente.fecha_nac);
+
+    panel.innerHTML = `
+        <div class="info-header">
+            <h3>Datos del paciente</h3>
+            <svg class="edit-icon"
+                 data-cedula="${paciente.cedula}"
+                 data-nombres="${paciente.nombres}"
+                 data-fecha="${paciente.fecha_nac}"
+                 data-sexo="${paciente.sexo}"
+                 data-telefono="${paciente.telefono}"
+                 data-correo="${paciente.correo}"
+                 xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" fill="#000">
+                <path d="M0 0h24v24H0z" fill="none"/>
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+            </svg>
+        </div>
+        <p><strong>Cédula/Pasaporte</strong><br>${paciente.cedula}</p>
+        <p><strong>Nombres Completos</strong><br>${paciente.nombres}</p>
+        <div class="flex-info">
+            <p><strong>Edad</strong><br>${edad}</p>
+            <p><strong>Sexo</strong><br>${paciente.sexo}</p>
+        </div>
+        <p><strong>Teléfono</strong><br>${paciente.telefono}</p>
+        <p><strong>Número de historia clínica</strong><br>HC-${Math.floor(Math.random() * 100000000)}</p>
+    `;
+
+    const editIcon = panel.querySelector(".edit-icon");
+    if (editIcon) editIcon.addEventListener("click", openEditModal);
+}
+
+
+function calcularEdad(fecha_nac) {
+    const hoy = new Date();
+    const nacimiento = new Date(fecha_nac);
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const m = hoy.getMonth() - nacimiento.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+        edad--;
+    }
+    return edad;
+}
+
+function cargarDatosEnModalEdicion() {
+    const icon = document.querySelector('.edit-icon');
+    if (!icon) return;
+
+    const cedula = icon.dataset.cedula || '';
+    const nombres = icon.dataset.nombres || '';
+    const fecha = icon.dataset.fecha || '';
+    const sexo = icon.dataset.sexo || '';
+    const telefono = icon.dataset.telefono || '';
+    const correo = icon.dataset.correo || '';
+
+    const modal = document.getElementById("editPatientModal");
+    modal.querySelectorAll("input")[0].value = cedula;
+    modal.querySelectorAll("input")[1].value = nombres;
+    modal.querySelectorAll("input")[2].value = fecha;
+    modal.querySelector("select").value = sexo;
+    modal.querySelector("input[type='text']:not([readonly])").value = telefono;
+    modal.querySelector("input[type='email']").value = correo;
+}
+
+
+document.querySelector('#editPatientModal form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const modal = document.getElementById("editPatientModal");
+
+    const cedula = modal.querySelector('input[readonly][type="text"]').value.trim();
+    const telefono = modal.querySelector('input[type="text"]:not([readonly])').value.trim();
+    const correo = modal.querySelector('input[type="email"]').value.trim();
+
+    if (!telefono || !correo) return mostrarAlerta("Teléfono y correo son obligatorios", true);
+
+    const token = localStorage.getItem("token");
+    if (!token) return mostrarAlerta("Sesión no válida", true);
+
+    try {
+        const resBuscar = await fetch(`http://localhost:777/api/patient/search/${cedula}`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
             }
         });
 
-        // Abrir modal editar paciente al hacer click en icono lápiz
-        document.addEventListener("DOMContentLoaded", () => {
-            const editIcon = document.querySelector(".edit-icon");
-            if(editIcon){
-                editIcon.addEventListener("click", openEditModal);
+        const paciente = await resBuscar.json();
+        if (!resBuscar.ok) return mostrarAlerta("Paciente no encontrado", true);
+
+        const idPaciente = paciente.id;
+
+        const resUpdate = await fetch(`http://localhost:777/api/patient/update/${idPaciente}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ telefono, correo })
+        });
+
+        const resultado = await resUpdate.json();
+
+        if (resUpdate.ok) {
+            mostrarAlerta("Paciente actualizado correctamente");
+
+            const sexo = modal.querySelector('select').value;
+            const nombres = modal.querySelector('input[readonly][type="text"]:nth-of-type(2)').value;
+
+            actualizarPanelPaciente({
+                cedula,
+                nombres,
+                fecha_nac: paciente.fecha_nac,
+                sexo,
+                telefono,
+                correo
+            });
+
+            closeEditModal();
+        } else {
+            mostrarAlerta(resultado.mensaje || "Error al actualizar paciente", true);
+        }
+    } catch (err) {
+        console.error(err);
+        mostrarAlerta("Error al conectar con el servidor", true);
+    }
+});
+
+
+document.getElementById("btnBuscarPaciente").addEventListener("click", async function () {
+    const cedulaInput = document.getElementById("searchCedula");
+    const cedula = cedulaInput.value.trim();
+    if (!cedula) return alert("Ingrese una cédula para buscar");
+
+    cedulaInput.value = "";
+
+    const token = localStorage.getItem("token");
+    if (!token) return alert("Sesión no válida");
+
+    try {
+        const res = await fetch(`http://localhost:777/api/patient/search/${cedula}`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
             }
         });
-    </script>
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            document.querySelector('.patient-info').innerHTML = `
+                <div class="info-header">
+                    <h3>Datos del paciente</h3>
+                </div>
+                <p style="text-align: center; color: #666; margin-top: 1rem;">${data.mensaje || "No se encontró el paciente"}</p>
+            `;
+
+            limpiarTablaCasos();
+        } else {
+            actualizarPanelPaciente(data);
+            limpiarTablaCasos();
+
+            localStorage.setItem("paciente_id", data.id);
+
+
+            try {
+                const resCasos = await fetch(`http://localhost:777/api/case/list/${data.id}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                });
+                const casos = await resCasos.json();
+                if (resCasos.ok) {
+                    mostrarCasosMedicos(casos);
+                }
+            } catch (error) {
+                console.error("Error al cargar casos médicos:", error);
+            }
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Error al buscar el paciente");
+    }
+});
+
+
+function limpiarTablaCasos() {
+    const tbody = document.querySelector(".cases-panel table tbody");
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align:center; color:#999;">Sin casos médicos disponibles</td>
+            </tr>
+        `;
+    }
+}
+
+document.querySelector('#addCaseForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const paciente_id = localStorage.getItem("paciente_id");
+    if (!paciente_id) return mostrarAlerta("Debe seleccionar un paciente antes de registrar el caso");
+
+    const inputs = document.querySelectorAll('#addCaseForm .input1');
+    const fecha = document.getElementById("fechaCasoHoy").value;
+    const diagnostico = inputs[0].value.trim();
+    const medico = medicoActual; 
+    const tratamiento = inputs[2].value.trim();
+    const observaciones = inputs[3].value.trim();
+
+
+    if (!fecha || !diagnostico || !tratamiento || !observaciones) {
+        return alert("Todos los campos son obligatorios");
+    }
+
+    const data = {
+        paciente_id: parseInt(paciente_id),
+        fecha_atencion: new Date(fecha).toISOString().split("T")[0],
+        diagnostico,
+        medico,
+        tratamiento,
+        observaciones
+    };
+
+    const token = localStorage.getItem("token");
+    if (!token) return alert("Sesión no válida");
+
+    try {
+        const res = await fetch("http://localhost:777/api/case/register", {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+            mostrarAlerta("Caso clínico registrado correctamente");
+            document.querySelector('#addCaseForm').reset();
+            closeCaseModal();
+
+            // Recargar todos los casos médicos actualizados desde el backend
+            try {
+                const resCasos = await fetch(`http://localhost:777/api/case/list/${paciente_id}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                });
+
+                const casosActualizados = await resCasos.json();
+                if (resCasos.ok) {
+                    mostrarCasosMedicos(casosActualizados);
+                } else {
+                    console.warn("No se pudieron recargar los casos médicos:", casosActualizados.mensaje);
+                }
+            } catch (error) {
+                console.error("Error al recargar casos médicos:", error);
+            }
+
+        } else {
+            mostrarAlerta(result.mensaje || "Error al registrar caso");
+        }
+    } catch (err) {
+        console.error(err);
+        mostrarAlerta("Error al conectar con el servidor");
+    }
+});
+
+
+function mostrarCasosMedicos(casos) {
+    const tbody = document.querySelector(".cases-panel table tbody");
+    if (!tbody) return;
+
+    if (!casos.length) {
+        return limpiarTablaCasos();
+    }
+
+    casos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+    tbody.innerHTML = casos.map(caso => `
+        <tr>
+            <td>${caso.fecha}</td>
+            <td>${caso.diagnostico}</td>
+            <td>${caso.medico}</td>
+            <td>${caso.tratamiento}</td>
+            <td>${caso.observaciones}</td>
+        </tr>
+    `).join('');
+}
+
+document.getElementById("btnEliminarPaciente").addEventListener("click", async function () {
+    const modal = document.getElementById("editPatientModal");
+    const cedula = modal.querySelector('input[readonly][type="text"]').value.trim();
+
+    if (!cedula) return alert("Cédula no válida");
+
+    const confirmacion = confirm("¿Estás seguro de eliminar este paciente?");
+    if (!confirmacion) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) return alert("Sesión no válida");
+
+    try {
+        // Primero obtenemos el ID del paciente a partir de su cédula
+        const resBuscar = await fetch(`http://localhost:777/api/patient/search/${cedula}`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const paciente = await resBuscar.json();
+        if (!resBuscar.ok) return alert("Paciente no encontrado");
+
+        const idPaciente = paciente.id;
+
+        // Ahora hacemos el DELETE
+        const resDelete = await fetch(`http://localhost:777/api/patient/delete/${idPaciente}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const result = await resDelete.json();
+        if (resDelete.ok) {
+            mostrarAlerta("Paciente eliminado correctamente");
+
+            // Limpiar la UI
+            document.querySelector('.patient-info').innerHTML = `
+                <div class="info-header">
+                    <h3>Datos del paciente</h3>
+                </div>
+                <p style="text-align: center; color: #666; margin-top: 1rem;">No hay paciente seleccionado</p>
+            `;
+            limpiarTablaCasos();
+            closeEditModal();
+        } else {
+            mostrarAlerta(result.mensaje || "Error al eliminar paciente");
+        }
+    } catch (err) {
+        console.error(err);
+        mostrarAlerta("Error al conectar con el servidor");
+    }
+});
+
+function mostrarAlerta(mensaje, esError = false) {
+    const alerta = document.getElementById("mensajeAlerta");
+    alerta.textContent = mensaje;
+    alerta.classList.toggle("error", esError);
+    alerta.style.display = "block";
+
+    setTimeout(() => {
+        alerta.style.display = "none";
+    }, 3000); // Ocultar después de 3 segundos
+}
+
+
+</script>
+
+
 </body>
+
+<div id="mensajeAlerta" class="alerta" style="display:none;"></div>
+
+
 </html>
+
