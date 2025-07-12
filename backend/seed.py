@@ -27,4 +27,21 @@ with app.app_context():
         )
         db.session.add(nuevo)
         db.session.commit()
-        print("✅ Usuario creado: admin1 / 1234")
+        print("Usuario creado: admin1 / 1234")
+
+
+    usuario = "doctor1"
+    contraseña = "1234"
+    rol = "medico"
+
+    if User.query.filter_by(usuario=usuario).first():
+        print("El usuario ya existe.")
+    else:
+        nuevo = User(
+            usuario=usuario,
+            password=generate_password_hash(contraseña),
+            rol=rol
+        )
+        db.session.add(nuevo)
+        db.session.commit()
+        print("Usuario creado: admin1 / 1234")

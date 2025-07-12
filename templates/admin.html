@@ -299,7 +299,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("📥 Respuesta:", data);
 
             if (res.ok) {
-                alert("✅ Médico registrado correctamente");
+                alert("Médico registrado correctamente");
                 this.reset();
                 closeAddDoctorModal();
                 location.reload();
@@ -308,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
         } catch (err) {
-            console.error("❌ Error al registrar médico:", err);
+            console.error("Error al registrar médico:", err);
             alert("No se pudo conectar al servidor");
         }
     });
@@ -381,7 +381,7 @@ document.getElementById("editDoctorForm").addEventListener("submit", async funct
         console.log("📥 Respuesta:", data);
 
         if (res.ok) {
-            alert("✅ Médico actualizado");
+            alert("Médico actualizado");
             closeEditDoctorModal();
             location.reload();
         } else {
@@ -413,10 +413,10 @@ document.addEventListener("click", async function (e) {
             });
 
             const data = await res.json();
-            console.log("📥 Respuesta de eliminación:", data);
+            console.log("Respuesta de eliminación:", data);
 
             if (res.ok) {
-                alert("✅ Médico eliminado correctamente");
+                alert("Médico eliminado correctamente");
                 location.reload(); // refresca la tabla
             } else {
                 alert(data.mensaje || "Error al eliminar médico");
