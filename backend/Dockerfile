@@ -16,4 +16,4 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Comando para correr la app
-CMD ["python", "app.py"]
+CMD ["sh", "-c", "python seed.py && python main.py"]

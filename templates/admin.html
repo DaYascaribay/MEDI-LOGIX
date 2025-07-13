@@ -146,15 +146,14 @@
             <h2>Editar Médico</h2>
         </div>
 
-        <!-- AQUI va el formulario nuevo -->
         <form id="editDoctorForm" class="modal-form">
             <input type="hidden" id="edit-id">
 
             <label>Nombres</label>
-            <input type="text" id="edit-nombres" readonly>
+            <input type="text" id="edit-nombres" required>
 
             <label>Apellidos</label>
-            <input type="text" id="edit-nombres" readonly>
+            <input type="text" id="edit-apellidos" required>
 
             <label>Especialidad</label>
             <input type="text" id="edit-especialidad" required>
@@ -163,13 +162,13 @@
             <input type="text" id="edit-telefono" required>
             
             <label>Fecha de Nacimiento</label>
-            <input type="date" id="edit-fecha" readonly>
+            <input type="date" id="edit-fecha" required>
 
             <label>Correo Electrónico</label>
             <input type="email" id="edit-correo" required>
 
             <label>Contraseña Nueva</label>
-            <input class="input1" type="password" placeholder="Ej: 1234abc" required>
+            <input class="input1" type="password" id="edit-password" placeholder="Ej: 1234abc">
 
             <div class="button-group">
                 <button type="submit" class="save-btn">Guardar</button>
@@ -229,10 +228,6 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("token");
-    //if (!token) {
-        //alert("Sesión expirada. Inicia sesión nuevamente.");
-        //return window.location.href = "/";
-    //}
 
     try {
         const res = await fetch("http://localhost:777/api/admin/medicos", {
@@ -242,10 +237,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         const data = await res.json();
-
-        if (!res.ok) {
-            return alert(data.mensaje || "Error al obtener médicos");
-        }
+        if (!res.ok) return alert(data.mensaje || "Error al obtener médicos");
 
         const tbody = document.querySelector(".admin-table tbody");
         tbody.innerHTML = ""; // limpia el tbody antes de llenar
@@ -255,20 +247,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             row.dataset.id = medico.id;
 
             row.innerHTML = `
-                <td>${medico.nombre}</td>
-                <td>${medico.apellido}</td>
-                <td>${medico.correo}</td>
-                <td>${medico.telefono || ''}</td>
-                <td>${medico.fecha_nac || ''}</td>
-                <td>${medico.especialidad || ''}</td>
-                <td>${medico.usuario}</td>
-                <td>${medico.password || '•••••••'}</td> <!-- Mostrar contraseña aquí -->
+                <td>${medico.nombres || '-'}</td>
+                <td>${medico.apellidos || '-'}</td>
+                <td>${medico.correo || '-'}</td>
+                <td>${medico.telefono || '-'}</td>
+                <td>${medico.fecha_nacimiento || '-'}</td>
+                <td>${medico.especialidad || '-'}</td>
+                <td>${medico.usuario || '-'}</td>
                 <td>
                     <button class="action-btn edit-btn">Editar</button>
                     <button class="action-btn delete-btn">Inhabilitar</button>
                 </td>
             `;
-
             tbody.appendChild(row);
         });
 
@@ -279,41 +269,44 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector("#addDoctorModal form");
-    if (!form) return console.warn("⚠️ Formulario de médico no encontrado");
+    if (!form) return;
 
     form.addEventListener("submit", async function (e) {
         e.preventDefault();
 
         const inputs = this.querySelectorAll("input");
+
+        const cedula = inputs[0].value.trim(); // este será tu campo 'usuario'
         const nombres = inputs[1].value.trim();
-        const partes = nombres.trim().split(" ");
-        const nombre = partes[0] || "Nombre";
-        const apellido = partes.slice(1).join(" ") || "SinApellido";
-        const usuario = (nombre + apellido).toLowerCase().replace(/\s+/g, "");
-        const correo = inputs[4].value.trim();
-        const especialidad = inputs[2].value.trim();
-        const telefono = inputs[3].value.trim();
-        const fecha_nac = "1990-01-01";
-        const password = "medico123";
+        const apellidos = inputs[2].value.trim();
+        const especialidad = inputs[3].value.trim();
+        const telefono = inputs[4].value.trim();
+        const fecha_nacimiento = inputs[5].value;
+        const correo = inputs[6].value.trim();
+        const password = inputs[7].value.trim();
 
-
-        
+        if (!cedula || !nombres || !apellidos || !especialidad || !telefono || !fecha_nacimiento || !correo || !password) {
+            return alert("Todos los campos son obligatorios");
+        }
 
         const token = localStorage.getItem("token");
         if (!token) return alert("Sesión no válida");
 
         const body = {
-            usuario,
+            usuario: cedula,
             password,
-            nombre,
-            apellido,
+            nombres,
+            apellidos,
             correo,
             especialidad,
-            fecha_nac,
+            fecha_nacimiento,
             telefono
         };
+
+        console.log("📤 Enviando datos del nuevo médico:", body);
 
         try {
             const res = await fetch("http://localhost:777/api/admin/crear_medico", {
@@ -326,10 +319,10 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             const data = await res.json();
-            console.log("📥 Respuesta:", data);
+            console.log("📥 Respuesta del backend:", data);
 
             if (res.ok) {
-                alert("Médico registrado correctamente");
+                alert("✅ Médico registrado correctamente");
                 this.reset();
                 closeAddDoctorModal();
                 location.reload();
@@ -338,64 +331,58 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
         } catch (err) {
-            console.error("Error al registrar médico:", err);
-            alert("No se pudo conectar al servidor");
+            console.error("❌ Error al registrar médico:", err);
+            alert("Error al conectar con el servidor");
         }
     });
 });
+
 
 document.addEventListener("click", function (e) {
     if (e.target.classList.contains("edit-btn")) {
         const row = e.target.closest("tr");
         const cells = row.querySelectorAll("td");
 
-        // Asegúrate de que el orden coincide con la tabla
-        const nombre = cells[0].textContent.trim();
-        const apellido = cells[1].textContent.trim();
+        const nombres = cells[0].textContent.trim();
+        const apellidos = cells[1].textContent.trim();
         const correo = cells[2].textContent.trim();
-        const fecha = cells[3].textContent.trim();
-        const especialidad = cells[4].textContent.trim();
-        const usuario = cells[5].textContent.trim();
+        const telefono = cells[3].textContent.trim();
+        const rawFecha = cells[4].textContent.trim();
+        const especialidad = cells[5].textContent.trim();
 
-        // Mostrar el modal
+        let fechaFormateada = "";
+        if (rawFecha) {
+            const fecha = new Date(rawFecha);
+            fechaFormateada = fecha.toISOString().split("T")[0];  // yyyy-mm-dd
+        }
+
         openEditDoctorModal();
 
-        // Rellenar el formulario
-        document.getElementById("edit-nombres").value = nombre + " " + apellido;
-        document.getElementById("edit-especialidad").value = especialidad;
-        document.getElementById("edit-telefono").value = ""; 
+        document.getElementById("edit-nombres").value = nombres;
+        document.getElementById("edit-apellidos").value = apellidos;
         document.getElementById("edit-correo").value = correo;
-        document.getElementById("edit-fecha").value = fecha;
-        document.getElementById("edit-id").value = row.dataset.id || ""; 
+        document.getElementById("edit-telefono").value = telefono;
+        document.getElementById("edit-fecha").value = fechaFormateada;
+        document.getElementById("edit-especialidad").value = especialidad;
+        document.getElementById("edit-id").value = row.dataset.id || "";
     }
 });
+
 
 document.getElementById("editDoctorForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const token = localStorage.getItem("token");
-    //if (!token) return alert("Sesión expirada. Inicia sesión nuevamente.");
-
     const id = document.getElementById("edit-id").value;
-    const nombres = document.getElementById("edit-nombres").value.trim();
-    const partes = nombres.split(" ");
-    const nombre = partes[0];
-    const apellido = partes.slice(1).join(" ") || "Apellido";
-    const correo = document.getElementById("edit-correo").value.trim();
-    const telefono = document.getElementById("edit-telefono").value.trim();
-    const especialidad = document.getElementById("edit-especialidad").value.trim();
-    const fecha_nac = document.getElementById("edit-fecha").value;
 
     const body = {
-        nombre,
-        apellido,
-        correo,
-        telefono,
-        especialidad,
-        fecha_nac
+        nombres: document.getElementById("edit-nombres").value.trim(),
+        apellidos: document.getElementById("edit-apellidos").value.trim(),
+        correo: document.getElementById("edit-correo").value.trim(),
+        telefono: document.getElementById("edit-telefono").value.trim(),
+        especialidad: document.getElementById("edit-especialidad").value.trim(),
+        fecha_nacimiento: document.getElementById("edit-fecha").value
     };
-
-    console.log("📤 Enviando actualización de médico:", body);
 
     try {
         const res = await fetch(`http://localhost:777/api/admin/medico/${id}`, {
@@ -408,56 +395,20 @@ document.getElementById("editDoctorForm").addEventListener("submit", async funct
         });
 
         const data = await res.json();
-        console.log("📥 Respuesta:", data);
-
         if (res.ok) {
-            alert("Médico actualizado");
+            alert("Médico actualizado correctamente");
             closeEditDoctorModal();
             location.reload();
         } else {
-            alert(data.mensaje || "❌ Error al actualizar médico");
+            alert(data.mensaje || "Error al actualizar");
         }
-
     } catch (err) {
-        console.error("❌ Error de red al actualizar médico:", err);
-        alert("No se pudo conectar al servidor");
+        console.error("❌ Error:", err);
+        alert("No se pudo conectar con el servidor");
     }
 });
-//document.addEventListener("click", async function (e) {
-    //if (e.target.classList.contains("delete-btn")) {
-        //const row = e.target.closest("tr");
-        //const id = row.dataset.id;
 
-        //const confirmacion = confirm("¿Estás seguro de eliminar este médico?");
-        //if (!confirmacion) return;
 
-        //const token = localStorage.getItem("token");
-        //if (!token) return alert("Sesión expirada. Inicia sesión nuevamente.");
-
-        //try {
-            //const res = await fetch(`http://localhost:777/api/admin/medico/${id}`, {
-                //method: "DELETE",
-                //headers: {
-                    //"Authorization": "Bearer " + token
-                //}
-//});
-
-            //const data = await res.json();
-            //console.log("Respuesta de eliminación:", data);
-
-            //if (res.ok) {
-                //alert("Médico eliminado correctamente");
-               // location.reload(); // refresca la tabla
-            //} else {
-                //alert(data.mensaje || "Error al eliminar médico");
-            //}
-
-        //} catch (err) {
-            //console.error("❌ Error al eliminar médico:", err);
-            //alert("No se pudo conectar al servidor");
-        //}
-    //}
-//});
 function cerrarSesion() {
     localStorage.removeItem("token");
     localStorage.removeItem("paciente_id");

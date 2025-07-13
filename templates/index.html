@@ -32,48 +32,49 @@
             passwordInput.type = passwordInput.type === "password" ? "text" : "password";
         }
 
-        document.getElementById("loginForm").addEventListener("submit", async function(e) {
-            e.preventDefault();
 
-            const user = document.getElementById("usuario").value.trim();
-            const password = document.getElementById("password").value.trim();
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
 
-            if (!user || !password) {
-                return alert("Usuario y contraseña son obligatorios");
-            }
+    const user = document.getElementById("usuario").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-            try {
-                const res = await fetch("http://localhost:777/api/auth/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ user, password })
-                });
+    if (!user || !password) {
+        return alert("Usuario y contraseña son obligatorios");
+    }
 
-                const data = await res.json();
-
-                if (res.ok && data.token) {
-                    localStorage.setItem("token", data.token);
-                    localStorage.setItem("rol", data.rol);
-
-                    if (data.rol === "admin") {
-                        window.location.href = "/admin";
-                    } else {
-                        window.location.href = "/dashboard";
-                    }
-                } else {
-                    alert(data.mensaje || "Credenciales inválidas");
-                }
-            } catch (error) {
-                console.error("Error de red:", error);
-                alert("Error al conectar con el servidor");
-            }
+    try {
+        const res = await fetch("http://localhost:777/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user, password })
         });
 
+        const data = await res.json();
+        console.log("🔁 Respuesta del backend:", data);
 
-            function togglePassword() {
-        const passwordInput = document.getElementById("password");
-        passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+        if (res.ok && data.token) {
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("rol", data.rol);
+
+            if (data.rol === "admin") {
+                console.log("🔐 Redirigiendo a /admin");
+                window.location.href = "/admin";
+            } else {
+                console.log("🩺 Redirigiendo a /dashboard");
+                window.location.href = "/dashboard";
+            }
+        } else {
+            alert(data.mensaje || "Credenciales inválidas");
+        }
+
+    } catch (error) {
+        console.error("❌ Error de red:", error);
+        alert("Error al conectar con el servidor");
     }
+});
+
+
 
     document.addEventListener("DOMContentLoaded", () => {
         const form = document.getElementById("loginForm");

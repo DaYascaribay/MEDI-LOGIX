@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import CasoClinico
+from models import CasoClinico, Medico
 from extensions import db
 from datetime import datetime
 
@@ -11,12 +11,12 @@ case_bp = Blueprint('case', __name__)
 def register_case():
     try:
         data = request.get_json()
-        user_id = int(get_jwt_identity()) 
+        user_id = int(get_jwt_identity())
 
         nuevo_caso = CasoClinico(
-            paciente_id = data['paciente_id'],
-            medico_id = user_id, 
-            fecha = datetime.strptime(data['fecha_atencion'], '%Y-%m-%d'),
+            id_paciente = data['paciente_id'],  # CORREGIDO
+            id_medico = user_id,                # CORREGIDO
+            fecha_atencion = datetime.strptime(data['fecha_atencion'], '%Y-%m-%d'),
             diagnostico = data['diagnostico'],
             tratamiento = data['tratamiento'],
             observaciones = data.get('observaciones', '')
@@ -32,17 +32,16 @@ def register_case():
         return jsonify({"mensaje": f"Error al registrar el caso: {str(e)}"}), 500
 
 
-# listar casos médicos por paciente_id
 @case_bp.route('/list/<int:paciente_id>', methods=['GET'])
 @jwt_required()
 def listar_casos_por_paciente(paciente_id):
     try:
-        casos = CasoClinico.query.filter_by(paciente_id=paciente_id).all()
+        casos = CasoClinico.query.filter_by(id_paciente=paciente_id).all()
         resultado = [
             {
-                "fecha": caso.fecha.strftime('%Y-%m-%d'),
+                "fecha": caso.fecha_atencion.strftime('%Y-%m-%d'),
                 "diagnostico": caso.diagnostico,
-                "medico": caso.medico.usuario if caso.medico else "Desconocido",  # CORREGIDO
+                "medico": f"{caso.medico.nombres} {caso.medico.apellidos}" if caso.medico else "Desconocido",
                 "tratamiento": caso.tratamiento,
                 "observaciones": caso.observaciones
             }

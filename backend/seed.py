@@ -1,47 +1,67 @@
+from main import create_app
 from extensions import db
-from models import User
-from app import create_app
-from werkzeug.security import generate_password_hash
+from models import Medico, Paciente, CasoClinico
 from datetime import datetime
+from werkzeug.security import generate_password_hash
 
 app = create_app()
 
 with app.app_context():
-    usuario = "admin2"
-    contraseña = "1234"
-    rol = "admin"
+    db.create_all()
 
-    if User.query.filter_by(usuario=usuario).first():
-        print("El usuario ya existe.")
-    else:
-        nuevo = User(
-            usuario=usuario,
-            password=generate_password_hash(contraseña),
-            rol=rol,
-            nombre="Admin",
-            apellido="Uno",
-            correo="admin1@medilogix.com",
-            especialidad="General",
-            fecha_nac=datetime.strptime("1980-01-01", "%Y-%m-%d"),
-            telefono="0999999999"
+    # Crear admin
+    if not Medico.query.filter_by(usuario="admin").first():
+        admin = Medico(
+            nombres="Admin",
+            apellidos="General",
+            correo="admin@medilogix.com",
+            fecha_nacimiento=datetime(1980, 1, 1),
+            especialidad="Administrador",
+            usuario="admin",
+            contrasena=generate_password_hash("admin123"),
+            rol=True,
+            telefono="0999999999"  # ← añadido
         )
-        db.session.add(nuevo)
-        db.session.commit()
-        print("Usuario creado: admin1 / 1234")
+        db.session.add(admin)
 
-
-    usuario = "doctor1"
-    contraseña = "1234"
-    rol = "medico"
-
-    if User.query.filter_by(usuario=usuario).first():
-        print("El usuario ya existe.")
-    else:
-        nuevo = User(
-            usuario=usuario,
-            password=generate_password_hash(contraseña),
-            rol=rol
+    # Crear médico
+    if not Medico.query.filter_by(usuario="drmario").first():
+        medico = Medico(
+            nombres="Mario",
+            apellidos="Romero",
+            correo="mario.romero@hospital.com",
+            fecha_nacimiento=datetime(1990, 6, 15),
+            especialidad="Pediatría",
+            usuario="drmario",
+            contrasena=generate_password_hash("mario123"),
+            rol=False,
+            telefono="0912345678"  # ← añadido
         )
-        db.session.add(nuevo)
-        db.session.commit()
-        print("Usuario creado: admin1 / 1234")
+        db.session.add(medico)
+        db.session.commit()  # para que tenga id_medico asignado
+
+        # Crear paciente
+        paciente = Paciente(
+            cedula="1102233445",
+            nombres="Juana",
+            apellidos="Pérez",
+            fecha_nacimiento=datetime(2000, 5, 20),
+            sexo="F",
+            telefono="0987654321"
+        )
+        db.session.add(paciente)
+        db.session.commit()  # para tener id_paciente
+
+        # Crear caso clínico asociado
+        caso = CasoClinico(
+            id_paciente=paciente.id_paciente,
+            id_medico=medico.id_medico,
+            fecha_atencion=datetime.now(),
+            diagnostico="Faringitis aguda",
+            tratamiento="Antibióticos y reposo",
+            observaciones="Paciente respondió bien al tratamiento inicial"
+        )
+        db.session.add(caso)
+
+    db.session.commit()
+    print("✅ Admin, médico, paciente y caso clínico creados correctamente.")

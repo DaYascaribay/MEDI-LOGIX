@@ -1,8 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
 from werkzeug.security import check_password_hash
-from models import User
-from extensions import db
+from models import Medico
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -15,16 +14,20 @@ def login():
     if not username or not password:
         return jsonify({"mensaje": "Usuario y contraseña son obligatorios"}), 400
 
-    user = User.query.filter_by(usuario=username).first()
+    medico = Medico.query.filter_by(usuario=username).first()
 
-    if user and check_password_hash(user.password, password):
-        # Incluye el rol como "claim", pero deja identity limpio (solo el ID)
-        additional_claims = {"rol": user.rol}
-        token = create_access_token(identity=str(user.id), additional_claims=additional_claims)
+    if medico and check_password_hash(medico.contrasena, password):
+        rol_str = "admin" if medico.rol else "medico"
+
+        additional_claims = {
+            "rol": rol_str
+        }
+
+        token = create_access_token(identity=str(medico.id_medico), additional_claims=additional_claims)
 
         return jsonify({
             "token": token,
-            "rol": user.rol,  # <-- para que el frontend pueda usarlo también si quiere
+            "rol": rol_str,
             "mensaje": "Acceso exitoso"
         }), 200
     else:
