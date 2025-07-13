@@ -1,6 +1,6 @@
 # MediLogix 🏥 – Historial Médico con Flask + MySQL + Docker
 
-Este proyecto gestiona pacientes y casos médicos usando Flask y una base de datos PostgreSQL contenida en Docker.
+Este proyecto gestiona pacientes y casos médicos usando Flask y una base de datos MySQL contenida en Docker.
 
 ---
 
