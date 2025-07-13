@@ -13,10 +13,9 @@ class Medico(db.Model):
     especialidad = db.Column(db.String(30), nullable=False)
     usuario = db.Column(db.String(30), unique=True, nullable=False)
     contrasena = db.Column(db.String(255), nullable=False)
-    rol = db.Column(db.Boolean, default=False)  # True si es admin
-
-    telefono = db.Column(db.String(10), nullable=True)  # ← AGREGADO
-
+    rol = db.Column(db.Boolean, default=False) 
+    telefono = db.Column(db.String(10), nullable=True)
+    activo = db.Column(db.Boolean, default=True) 
     casos = db.relationship('CasoClinico', backref='medico', lazy=True, cascade="all, delete-orphan")
 
 

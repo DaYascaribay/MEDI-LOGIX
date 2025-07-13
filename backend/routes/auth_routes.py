@@ -16,7 +16,7 @@ def login():
 
     medico = Medico.query.filter_by(usuario=username).first()
 
-    if medico and check_password_hash(medico.contrasena, password):
+    if medico and medico.activo and check_password_hash(medico.contrasena, password):
         rol_str = "admin" if medico.rol else "medico"
 
         additional_claims = {

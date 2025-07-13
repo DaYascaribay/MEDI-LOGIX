@@ -117,7 +117,7 @@
             <input class="input1" type="text" placeholder="Ej: 0991234567" required>
 
             <label>Fecha de Nacimiento</label>
-            <input class="input1" type="date" id="edit-fecha" required>
+            <input class="input1" type="date" id="add-fecha" required>
 
             <label>Correo Electrónico</label>
             <input class="input1" type="email" placeholder="Ej: ejemplo@correo.com" required>
@@ -256,8 +256,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <td>${medico.usuario || '-'}</td>
                 <td>
                     <button class="action-btn edit-btn">Editar</button>
-                    <button class="action-btn delete-btn">Inhabilitar</button>
+                    <button class="action-btn delete-btn toggle-btn">
+                        ${medico.activo ? 'Habilitar' : 'Inhabilitar'}
+                    </button>
                 </td>
+
             `;
             tbody.appendChild(row);
         });
@@ -284,7 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const apellidos = inputs[2].value.trim();
         const especialidad = inputs[3].value.trim();
         const telefono = inputs[4].value.trim();
-        const fecha_nacimiento = inputs[5].value;
+        const fecha_nacimiento = document.getElementById("add-fecha").value;
         const correo = inputs[6].value.trim();
         const password = inputs[7].value.trim();
 
@@ -415,6 +418,37 @@ function cerrarSesion() {
     window.location.href = "/";  // <-- Ajusta esta URL si tu ruta de login es distinta
 }
 
-    </script>
+document.addEventListener("click", async function (e) {
+    if (e.target.classList.contains("toggle-btn")) {
+        const row = e.target.closest("tr");
+        const id = row.dataset.id;
+        const token = localStorage.getItem("token");
+
+        try {
+            const res = await fetch(`http://localhost:777/api/admin/toggle_medico/${id}`, {
+                method: "PATCH",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                const btn = e.target;
+                // Cambiar texto del botón según respuesta del servidor
+                btn.textContent = (btn.textContent === "Habilitar") ? "Inhabilitar" : "Habilitar";
+                alert(data.mensaje);
+            } else {
+                alert(data.mensaje || "Error al cambiar estado del médico");
+            }
+        } catch (err) {
+            alert("Error al conectar con el servidor");
+        }
+    }
+});
+
+
+</script>
 </body>
 </html>

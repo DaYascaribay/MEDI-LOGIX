@@ -135,3 +135,19 @@ def eliminar_medico(id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"mensaje": f"Error al eliminar médico: {str(e)}"}), 500
+
+
+@admin_bp.route("/api/admin/toggle_medico/<int:id>", methods=["PATCH"])
+@jwt_required()
+def toggle_estado_medico(id):
+    claims = get_jwt()
+    if not claims.get("rol"):
+        return jsonify({"mensaje": "Acceso denegado"}), 403
+
+    medico = Medico.query.get(id)
+    if not medico:
+        return jsonify({"mensaje": "Médico no encontrado"}), 404
+
+    medico.activo = not medico.activo  # alterna entre True y False
+    db.session.commit()
+    return jsonify({"mensaje": f"Médico {'habilitado' if medico.activo else 'inhabilitado'} correctamente"}), 200
