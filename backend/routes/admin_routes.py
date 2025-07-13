@@ -28,6 +28,7 @@ def obtener_medicos():
         resultado = [
             {
                 "id": m.id_medico,
+                "cedula": m.cedula or "",
                 "usuario": m.usuario,
                 "contrasena": m.contrasena,
                 "correo": m.correo or "",
@@ -35,9 +36,11 @@ def obtener_medicos():
                 "apellidos": m.apellidos or "",
                 "telefono": m.telefono or "",
                 "fecha_nacimiento": m.fecha_nacimiento.strftime("%Y-%m-%d") if m.fecha_nacimiento else "",
-                "especialidad": m.especialidad or ""
+                "especialidad": m.especialidad or "",
+                "activo": m.activo
             } for m in medicos
         ]
+
         return jsonify(resultado)
     except Exception as e:
         print(f"❌ Error en /api/admin/medicos: {e}")
@@ -52,22 +55,31 @@ def crear_medico():
         return jsonify({"mensaje": "Acceso denegado"}), 403
 
     data = request.get_json()
-    usuario = data.get("usuario")
-    password = data.get("password")
+    cedula = data.get("cedula")
     nombres = data.get("nombres")
     apellidos = data.get("apellidos")
+    password = data.get("password")
     correo = data.get("correo")
     especialidad = data.get("especialidad")
     fecha_nacimiento = data.get("fecha_nacimiento")
     telefono = data.get("telefono")
 
-    if not all([usuario, password, nombres, apellidos, correo, especialidad, fecha_nacimiento, telefono]):
+    if not all([cedula, password, nombres, apellidos, correo, especialidad, fecha_nacimiento, telefono]):
         return jsonify({"mensaje": "Faltan campos"}), 400
 
-    if Medico.query.filter_by(usuario=usuario).first():
-        return jsonify({"mensaje": "El usuario ya existe"}), 409
+    # Generar usuario como nombre.apellido en minúsculas
+    base_usuario = f"{nombres.split()[0].lower()}.{apellidos.split()[0].lower()}"
+    usuario = base_usuario
+    contador = 1
+    while Medico.query.filter_by(usuario=usuario).first():
+        usuario = f"{base_usuario}{contador}"
+        contador += 1
+
+    if Medico.query.filter_by(cedula=cedula).first():
+        return jsonify({"mensaje": "La cédula ya está registrada"}), 409
 
     nuevo_medico = Medico(
+        cedula=cedula,
         usuario=usuario,
         contrasena=generate_password_hash(password),
         rol=False,
@@ -101,6 +113,7 @@ def actualizar_medico(id):
     medico.correo = data.get("correo", medico.correo)
     medico.telefono = data.get("telefono", medico.telefono)
     medico.especialidad = data.get("especialidad", medico.especialidad)
+    medico.cedula = data.get("cedula", medico.cedula)
 
     fecha_nacimiento = data.get("fecha_nacimiento")
     if fecha_nacimiento:

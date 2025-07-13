@@ -73,6 +73,7 @@
                     <tr>
                         <th>Nombre</th>
                         <th>Apellidos</th>
+                        <th>Cédula</th>
                         <th>Correo</th>
                         <th>Teléfono</th>
                         <th>Fecha Nacimiento</th>
@@ -249,6 +250,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             row.innerHTML = `
                 <td>${medico.nombres || '-'}</td>
                 <td>${medico.apellidos || '-'}</td>
+                <td>${medico.cedula || '-'}</td>
                 <td>${medico.correo || '-'}</td>
                 <td>${medico.telefono || '-'}</td>
                 <td>${medico.fecha_nacimiento || '-'}</td>
@@ -256,9 +258,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <td>${medico.usuario || '-'}</td>
                 <td>
                     <button class="action-btn edit-btn">Editar</button>
-                    <button class="action-btn delete-btn toggle-btn">
-                        ${medico.activo ? 'Habilitar' : 'Inhabilitar'}
-                    </button>
+                <button class="action-btn delete-btn toggle-btn">
+                    ${medico.activo ? 'Inhabilitar' : 'Habilitar'}
+                </button>
+
                 </td>
 
             `;
@@ -282,9 +285,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const inputs = this.querySelectorAll("input");
 
-        const cedula = inputs[0].value.trim(); // este será tu campo 'usuario'
+        const cedula = inputs[0].value.trim();
         const nombres = inputs[1].value.trim();
         const apellidos = inputs[2].value.trim();
+        const usuario = `${nombres.split(" ")[0].toLowerCase()}.${apellidos.split(" ")[0].toLowerCase()}`;
         const especialidad = inputs[3].value.trim();
         const telefono = inputs[4].value.trim();
         const fecha_nacimiento = document.getElementById("add-fecha").value;
@@ -299,8 +303,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!token) return alert("Sesión no válida");
 
         const body = {
-            usuario: cedula,
+            usuario,
             password,
+            cedula,
             nombres,
             apellidos,
             correo,

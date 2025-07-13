@@ -12,6 +12,7 @@ with app.app_context():
     # Crear admin
     if not Medico.query.filter_by(usuario="admin").first():
         admin = Medico(
+            cedula="0000000000",  # ← agregado
             nombres="Admin",
             apellidos="General",
             correo="admin@medilogix.com",
@@ -20,13 +21,14 @@ with app.app_context():
             usuario="admin",
             contrasena=generate_password_hash("admin123"),
             rol=True,
-            telefono="0999999999"  # ← añadido
+            telefono="0999999999"
         )
         db.session.add(admin)
 
     # Crear médico
     if not Medico.query.filter_by(usuario="drmario").first():
         medico = Medico(
+            cedula="1101234567",  # ← agregado
             nombres="Mario",
             apellidos="Romero",
             correo="mario.romero@hospital.com",
@@ -35,7 +37,7 @@ with app.app_context():
             usuario="drmario",
             contrasena=generate_password_hash("mario123"),
             rol=False,
-            telefono="0912345678"  # ← añadido
+            telefono="0912345678"
         )
         db.session.add(medico)
         db.session.commit()  # para que tenga id_medico asignado
@@ -50,7 +52,7 @@ with app.app_context():
             telefono="0987654321"
         )
         db.session.add(paciente)
-        db.session.commit()  # para tener id_paciente
+        db.session.commit()
 
         # Crear caso clínico asociado
         caso = CasoClinico(

@@ -6,6 +6,7 @@ class Medico(db.Model):
     __tablename__ = 'medicos'
 
     id_medico = db.Column(db.Integer, primary_key=True)
+    cedula = db.Column(db.String(10), unique=True, nullable=False)
     nombres = db.Column(db.String(50), nullable=False)
     apellidos = db.Column(db.String(50), nullable=False)
     correo = db.Column(db.String(50), nullable=False)
