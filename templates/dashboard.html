@@ -12,6 +12,7 @@
                 <img src="{{ url_for('static', filename='medico.png') }}" alt="Logo" class="logo-icon">
                 <span class="logo-text">MEDI LOGIX</span>
                 <button class="add-pac-btn" onclick="openModal()">AÑADIR PACIENTE</button>
+                <button class="logout-btn" onclick="cerrarSesion()">CERRAR SESIÓN</button>
             </div>
 
             <div class="search-area">
@@ -347,6 +348,7 @@ function actualizarPanelPaciente(paciente) {
             <p><strong>Sexo</strong><br>${paciente.sexo}</p>
         </div>
         <p><strong>Teléfono</strong><br>${paciente.telefono}</p>
+        <p><strong>Correo electrónico</strong><br>${paciente.correo}</p>
         <p><strong>Número de historia clínica</strong><br>HC-${Math.floor(Math.random() * 100000000)}</p>
     `;
 
@@ -683,6 +685,11 @@ function mostrarAlerta(mensaje, esError = false) {
     }, 3000); // Ocultar después de 3 segundos
 }
 
+function cerrarSesion() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("paciente_id");
+    window.location.href = "/";  // <-- Ajusta esta URL si tu ruta de login es distinta
+}
 
 </script>
 

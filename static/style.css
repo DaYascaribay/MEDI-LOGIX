@@ -401,3 +401,19 @@ tbody tr:nth-child(even) {
     90%  { opacity: 1; transform: translateY(0); }
     100% { opacity: 0; transform: translateY(-10px); }
 }
+
+.logout-btn {
+    margin-left: 10px;
+    background-color: #ffcccc;
+    border: 1px solid #b30000;
+    color: #b30000;
+    padding: 8px 14px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.logout-btn:hover {
+    background-color: #ff9999;
+}

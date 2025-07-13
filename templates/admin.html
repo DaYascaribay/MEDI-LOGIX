@@ -62,6 +62,7 @@
                 <img src="{{ url_for('static', filename='medico.png') }}" alt="Logo" class="logo-icon">
                 <span class="logo-text">MEDI LOGIX</span>
                 <button class="add-pac-btn" onclick="openAddDoctorModal()">AGREGAR MÉDICO</button>
+                <button class="logout-btn" onclick="cerrarSesion()">CERRAR SESIÓN</button>
             </div>
             <div class="datetime-display" id="datetime"></div>
         </header>
@@ -73,9 +74,11 @@
                         <th>Nombre</th>
                         <th>Apellidos</th>
                         <th>Correo</th>
+                        <th>Teléfono</th>
                         <th>Fecha Nacimiento</th>
                         <th>Especialidad</th>
                         <th>Username</th>
+                        <th>Contraseña</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -111,8 +114,14 @@
             <label>Teléfono</label>
             <input class="input1" type="text" placeholder="Ej: 0991234567" required>
 
+            <label>Fecha de Nacimiento</label>
+            <input class="input1" type="date" id="edit-fecha" required>
+
             <label>Correo Electrónico</label>
             <input class="input1" type="email" placeholder="Ej: ejemplo@correo.com" required>
+
+            <label>Contraseña</label>
+            <input class="input1" type="password" placeholder="Ej: 1234abc" required>
 
             <div class="button-group">
                 <button type="submit" class="save-btn">Guardar</button>
@@ -122,7 +131,6 @@
 </div>
 
 <!-- Modal Editar Médico -->
- <!-- Modal Editar Médico -->
 <div id="editDoctorModal" class="modal" style="display: none;">
     <div class="modal-content">
         <span class="close" onclick="closeEditDoctorModal()">&times;</span>
@@ -148,12 +156,15 @@
 
             <label>Teléfono</label>
             <input type="text" id="edit-telefono" required>
+            
+            <label>Fecha de Nacimiento</label>
+            <input type="date" id="edit-fecha" required>
 
             <label>Correo Electrónico</label>
             <input type="email" id="edit-correo" required>
 
-            <label>Fecha de Nacimiento</label>
-            <input type="date" id="edit-fecha" required>
+            <label>Contraseña Nueva</label>
+            <input class="input1" type="password" placeholder="Ej: 1234abc" required>
 
             <div class="button-group">
                 <button type="submit" class="save-btn">Guardar</button>
@@ -203,10 +214,10 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("token");
-    if (!token) {
-        alert("Sesión expirada. Inicia sesión nuevamente.");
-        return window.location.href = "/";
-    }
+    //if (!token) {
+        //alert("Sesión expirada. Inicia sesión nuevamente.");
+        //return window.location.href = "/";
+    //}
 
     try {
         const res = await fetch("http://localhost:777/api/admin/medicos", {
@@ -236,7 +247,7 @@ row.innerHTML = `
   <td>${medico.usuario}</td>
   <td>
       <button class="action-btn edit-btn">Editar</button>
-      <button class="action-btn delete-btn">Eliminar</button>
+      <button class="action-btn delete-btn">Inhabilitar</button>
   </td>
 `;
 
@@ -344,7 +355,7 @@ document.getElementById("editDoctorForm").addEventListener("submit", async funct
     e.preventDefault();
 
     const token = localStorage.getItem("token");
-    if (!token) return alert("Sesión expirada. Inicia sesión nuevamente.");
+    //if (!token) return alert("Sesión expirada. Inicia sesión nuevamente.");
 
     const id = document.getElementById("edit-id").value;
     const nombres = document.getElementById("edit-nombres").value.trim();
@@ -393,42 +404,46 @@ document.getElementById("editDoctorForm").addEventListener("submit", async funct
         alert("No se pudo conectar al servidor");
     }
 });
-document.addEventListener("click", async function (e) {
-    if (e.target.classList.contains("delete-btn")) {
-        const row = e.target.closest("tr");
-        const id = row.dataset.id;
+//document.addEventListener("click", async function (e) {
+    //if (e.target.classList.contains("delete-btn")) {
+        //const row = e.target.closest("tr");
+        //const id = row.dataset.id;
 
-        const confirmacion = confirm("¿Estás seguro de eliminar este médico?");
-        if (!confirmacion) return;
+        //const confirmacion = confirm("¿Estás seguro de eliminar este médico?");
+        //if (!confirmacion) return;
 
-        const token = localStorage.getItem("token");
-        if (!token) return alert("Sesión expirada. Inicia sesión nuevamente.");
+        //const token = localStorage.getItem("token");
+        //if (!token) return alert("Sesión expirada. Inicia sesión nuevamente.");
 
-        try {
-            const res = await fetch(`http://localhost:777/api/admin/medico/${id}`, {
-                method: "DELETE",
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
-            });
+        //try {
+            //const res = await fetch(`http://localhost:777/api/admin/medico/${id}`, {
+                //method: "DELETE",
+                //headers: {
+                    //"Authorization": "Bearer " + token
+                //}
+//});
 
-            const data = await res.json();
-            console.log("Respuesta de eliminación:", data);
+            //const data = await res.json();
+            //console.log("Respuesta de eliminación:", data);
 
-            if (res.ok) {
-                alert("Médico eliminado correctamente");
-                location.reload(); // refresca la tabla
-            } else {
-                alert(data.mensaje || "Error al eliminar médico");
-            }
+            //if (res.ok) {
+                //alert("Médico eliminado correctamente");
+               // location.reload(); // refresca la tabla
+            //} else {
+                //alert(data.mensaje || "Error al eliminar médico");
+            //}
 
-        } catch (err) {
-            console.error("❌ Error al eliminar médico:", err);
-            alert("No se pudo conectar al servidor");
-        }
-    }
-});
-
+        //} catch (err) {
+            //console.error("❌ Error al eliminar médico:", err);
+            //alert("No se pudo conectar al servidor");
+        //}
+    //}
+//});
+function cerrarSesion() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("paciente_id");
+    window.location.href = "/";  // <-- Ajusta esta URL si tu ruta de login es distinta
+}
 
     </script>
 </body>
