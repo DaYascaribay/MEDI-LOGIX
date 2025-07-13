@@ -43,13 +43,3 @@ class CasoClinico(db.Model):
     tratamiento = db.Column(db.String(255), nullable=False)
     observaciones = db.Column(db.Text)
     medico = db.relationship("User", backref="casos")
-
-
-class Auditoria(db.Model):
-    __tablename__ = 'auditoria'
-    id = db.Column(db.Integer, primary_key=True)
-    id_usuario = db.Column(db.Integer, nullable=False)
-    accion = db.Column(db.String(100), nullable=False)
-    fecha = db.Column(db.DateTime, default=datetime.utcnow)
-    modulo = db.Column(db.String(100), nullable=False)
-    detalle = db.Column(db.String(1000))

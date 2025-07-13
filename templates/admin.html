@@ -175,6 +175,16 @@
 
 
     <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem("token");
+    const rol = localStorage.getItem("rol");
+
+    if (!token || rol !== "admin") {
+        alert("Acceso denegado. Debes iniciar sesión como administrador.");
+        window.location.href = "/";
+    }
+});
         function updateDateTime() {
             const now = new Date();
             const date = now.toLocaleDateString('es-EC', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -236,20 +246,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         tbody.innerHTML = ""; // limpia el tbody antes de llenar
 
         data.forEach(medico => {
-const row = document.createElement("tr");
-row.dataset.id = medico.id; 
-row.innerHTML = `
-  <td>${medico.nombre}</td>
-  <td>${medico.apellido}</td>
-  <td>${medico.correo}</td>
-  <td>${medico.fecha_nac}</td>
-  <td>${medico.especialidad}</td>
-  <td>${medico.usuario}</td>
-  <td>
-      <button class="action-btn edit-btn">Editar</button>
-      <button class="action-btn delete-btn">Inhabilitar</button>
-  </td>
-`;
+            const row = document.createElement("tr");
+            row.dataset.id = medico.id;
+
+            row.innerHTML = `
+                <td>${medico.nombre}</td>
+                <td>${medico.apellido}</td>
+                <td>${medico.correo}</td>
+                <td>${medico.telefono || ''}</td>
+                <td>${medico.fecha_nac || ''}</td>
+                <td>${medico.especialidad || ''}</td>
+                <td>${medico.usuario}</td>
+                <td>${medico.password || '•••••••'}</td> <!-- Mostrar contraseña aquí -->
+                <td>
+                    <button class="action-btn edit-btn">Editar</button>
+                    <button class="action-btn delete-btn">Inhabilitar</button>
+                </td>
+            `;
 
             tbody.appendChild(row);
         });
@@ -280,6 +293,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const fecha_nac = "1990-01-01";
         const password = "medico123";
 
+
+        
+
         const token = localStorage.getItem("token");
         if (!token) return alert("Sesión no válida");
 
@@ -293,8 +309,6 @@ document.addEventListener("DOMContentLoaded", () => {
             fecha_nac,
             telefono
         };
-
-        console.log("🔽 Enviando médico al backend:", body);
 
         try {
             const res = await fetch("http://localhost:777/api/admin/crear_medico", {

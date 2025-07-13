@@ -194,6 +194,16 @@
     </div>
 
 <script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("Sesión expirada o no iniciada.");
+        window.location.href = "/";
+        return;
+    }
+});
+
 const medicoActual = "Dr. Mario Romero";
 
 function openModal() {

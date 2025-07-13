@@ -27,14 +27,17 @@ def obtener_medicos():
         {
             "id": m.id,
             "usuario": m.usuario,
+            "password": m.password,
             "correo": m.correo or "",
             "nombre": m.nombre or "",
             "apellido": m.apellido or "",
+            "telefono": m.telefono or "",
             "fecha_nac": m.fecha_nac.strftime("%Y-%m-%d") if m.fecha_nac else "",
             "especialidad": m.especialidad or ""
         } for m in medicos
     ]
     return jsonify(resultado)
+
 
 @admin_bp.route("/api/admin/crear_medico", methods=["POST"])
 @jwt_required()
