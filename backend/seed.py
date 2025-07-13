@@ -49,7 +49,8 @@ with app.app_context():
             apellidos="Pérez",
             fecha_nacimiento=datetime(2000, 5, 20),
             sexo="F",
-            telefono="0987654321"
+            telefono="0987654321",
+            correo="juana.perez@example.com"
         )
         db.session.add(paciente)
         db.session.commit()

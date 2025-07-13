@@ -24,14 +24,15 @@ def add_patient():
             apellidos=data['apellidos'],
             fecha_nacimiento=fecha,
             sexo=data['sexo'],
-            telefono=data.get('telefono', '')
+            telefono=data.get('telefono', ''),
+            correo=data.get('correo', '')  # ← AÑADIDO
         )
 
         db.session.add(paciente)
         db.session.commit()
         return jsonify({
             "mensaje": "Paciente registrado correctamente",
-            "id": paciente.id_paciente  # CORREGIDO
+            "id": paciente.id_paciente
         }), 201
 
     except IntegrityError:
@@ -49,13 +50,15 @@ def listar_pacientes():
     pacientes = Paciente.query.all()
     resultado = [
         {
-            "id": p.id_paciente,  # CORREGIDO
+            "id": p.id_paciente,
             "cedula": p.cedula,
             "nombres": p.nombres,
             "apellidos": p.apellidos,
-            "fecha_nacimiento": p.fecha_nacimiento.strftime('%Y-%m-%d'),
+            "fecha_nac": p.fecha_nacimiento.strftime('%Y-%m-%d'),
             "sexo": p.sexo,
-            "telefono": p.telefono
+            "telefono": p.telefono,
+            "correo": p.correo or "",
+            "historia_clinica": f"HC-{p.id_paciente:05d}"  # ← FORMATO 00001
         } for p in pacientes
     ]
     return jsonify(resultado)
@@ -85,7 +88,11 @@ def actualizar_paciente(id):
         paciente.sexo = data.get('sexo', paciente.sexo)
         paciente.nombres = data.get('nombres', paciente.nombres)
         paciente.apellidos = data.get('apellidos', paciente.apellidos)
-        paciente.fecha_nacimiento = datetime.strptime(data.get('fecha_nacimiento', paciente.fecha_nacimiento.strftime('%Y-%m-%d')), '%Y-%m-%d')
+        paciente.correo = data.get('correo', paciente.correo)  # ← AÑADIDO
+        paciente.fecha_nacimiento = datetime.strptime(
+            data.get('fecha_nacimiento', paciente.fecha_nacimiento.strftime('%Y-%m-%d')), '%Y-%m-%d'
+        )
+
         db.session.commit()
         return jsonify({"mensaje": "Datos del paciente actualizados"}), 200
     except Exception as e:
@@ -100,11 +107,13 @@ def buscar_por_cedula(cedula):
     if not paciente:
         return jsonify({"mensaje": "Paciente no encontrado"}), 404
     return jsonify({
-        "id": paciente.id_paciente,  # CORREGIDO
+        "id": paciente.id_paciente,
         "cedula": paciente.cedula,
         "nombres": paciente.nombres,
         "apellidos": paciente.apellidos,
-        "fecha_nacimiento": paciente.fecha_nacimiento.strftime('%Y-%m-%d'),
+        "fecha_nac": paciente.fecha_nacimiento.strftime('%Y-%m-%d'),
         "sexo": paciente.sexo,
-        "telefono": paciente.telefono
+        "telefono": paciente.telefono,
+        "correo": paciente.correo or "",
+        "historia_clinica": f"HC-{paciente.id_paciente:05d}"  # ← FORMATO 00001
     })

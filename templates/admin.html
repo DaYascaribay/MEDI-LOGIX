@@ -151,22 +151,22 @@
             <input type="hidden" id="edit-id">
 
             <label>Nombres</label>
-            <input type="text" id="edit-nombres" required>
+            <input class="input1" type="text" id="edit-nombres" required>
 
             <label>Apellidos</label>
-            <input type="text" id="edit-apellidos" required>
+            <input class="input1" type="text" id="edit-apellidos" required>
 
             <label>Especialidad</label>
-            <input type="text" id="edit-especialidad" required>
+            <input class="input1" type="text" id="edit-especialidad" required>
 
             <label>Teléfono</label>
-            <input type="text" id="edit-telefono" required>
+            <input class="input1" type="text" id="edit-telefono" required>
             
             <label>Fecha de Nacimiento</label>
-            <input type="date" id="edit-fecha" required>
+            <input class="input1" type="date" id="edit-fecha" required>
 
             <label>Correo Electrónico</label>
-            <input type="email" id="edit-correo" required>
+            <input class="input1" type="email" id="edit-correo" required>
 
             <label>Contraseña Nueva</label>
             <input class="input1" type="password" id="edit-password" placeholder="Ej: 1234abc">
@@ -353,10 +353,11 @@ document.addEventListener("click", function (e) {
 
         const nombres = cells[0].textContent.trim();
         const apellidos = cells[1].textContent.trim();
-        const correo = cells[2].textContent.trim();
-        const telefono = cells[3].textContent.trim();
-        const rawFecha = cells[4].textContent.trim();
-        const especialidad = cells[5].textContent.trim();
+        const correo = cells[3].textContent.trim();
+        const telefono = cells[4].textContent.trim();
+        const rawFecha = cells[5].textContent.trim();
+        const especialidad = cells[6].textContent.trim();
+
 
         let fechaFormateada = "";
         if (rawFecha) {
@@ -370,7 +371,7 @@ document.addEventListener("click", function (e) {
         document.getElementById("edit-apellidos").value = apellidos;
         document.getElementById("edit-correo").value = correo;
         document.getElementById("edit-telefono").value = telefono;
-        document.getElementById("edit-fecha").value = fechaFormateada;
+        document.getElementById("edit-fecha").value = rawFecha;
         document.getElementById("edit-especialidad").value = especialidad;
         document.getElementById("edit-id").value = row.dataset.id || "";
     }
@@ -452,8 +453,6 @@ document.addEventListener("click", async function (e) {
         }
     }
 });
-
-
 </script>
 </body>
 </html>
