@@ -30,8 +30,8 @@ class Paciente(db.Model):
     apellidos = db.Column(db.String(50), nullable=False)
     fecha_nacimiento = db.Column(db.DateTime, nullable=False)
     sexo = db.Column(db.String(1), nullable=False)  # 'M' o 'F'. Alternativa: usar db.Boolean o db.Integer
-    telefono = db.Column(db.String(10), nullable=True)
-    correo = db.Column(db.String(50), nullable=True)
+    telefono = db.Column(db.String(10), unique=True, nullable=True)
+    correo = db.Column(db.String(50), unique=True, nullable=True)
 
     casos = db.relationship('CasoClinico', backref='paciente', lazy=True, cascade="all, delete-orphan")
 
