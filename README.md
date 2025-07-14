@@ -75,18 +75,7 @@ medilogix/
    ```
    Esto construirá la imagen de Flask y levantará tanto el servicio del backend como el de la base de datos.
 
-3. **Inicializa la base de datos (solo la primera vez)**
-   Abre otra terminal y, desde la carpeta `backend`, ejecuta:
-   ```bash
-   docker-compose exec backend python create_db.py
-   ```
-
-4. **Puebla la base de datos con datos de prueba (opcional)**
-   ```bash
-   docker-compose exec backend python seed.py
-   ```
-
-5. **Accede a la aplicación**
+4. **Accede a la aplicación**
    - La API del backend estará disponible en `http://localhost:777`.
    - Las vistas web se pueden acceder desde `http://localhost:5000` (si estás corriendo `app.py` localmente fuera de Docker).
 
