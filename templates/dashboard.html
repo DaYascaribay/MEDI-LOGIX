@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Historial Médico - Medi Logix</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="header">
+            <div class="logo-area">
+                <img src="{{ url_for('static', filename='medico.png') }}" alt="Logo" class="logo-icon">
+                <span class="logo-text">MEDI LOGIX</span>
+                <button class="add-pac-btn" onclick="openModal()">AÑADIR PACIENTE</button>
+                <button class="logout-btn" onclick="cerrarSesion()">CERRAR SESIÓN</button>
+            </div>
+
+            <div class="search-area">
+                <input type="text" id="searchCedula" placeholder="Buscar por cédula">
+                <button id="btnBuscarPaciente">BUSCAR</button>
+            </div>
+
+        </header>
+
+        <main class="main-panel">
+            <aside class="patient-info">
+                <div class="info-header">
+                    <h3>Datos del paciente</h3>
+                </div>
+                <p style="text-align: center; color: #666; margin-top: 1rem;">No hay paciente seleccionado</p>
+            </aside>
+
+
+            <section class="cases-panel">
+                <div class="cases-header">
+                    <h3>Casos Médicos asociados</h3>
+                    <button class="add-case-btn" title="Agregar nuevo caso" onclick="openCaseModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24" fill="#000" viewBox="0 0 24 24">
+                            <path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                    </button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Diagnóstico</th>
+                            <th>Médico Tratante</th>
+                            <th>Tratamiento</th>
+                            <th>Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Añadir Paciente -->
+    <div id="addPatientModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <div class="circle-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" fill="black">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+                    </svg>
+                </div>
+                <h2>Añadir Paciente</h2>
+            </div>
+            <form class="modal-form" id="addPatientForm">
+                <label>Cédula/Pasaporte</label>
+                <input class="input1" type="text" placeholder="Ej: 1711576786" required>
+
+                <label>Nombres</label>
+                <input class="input1" type="text" placeholder="Ej: Pedro Pascal" required>
+                <label>Apellidos</label>
+                <input class="input1" type="text" placeholder="Ej: Pereira Ríos" required>
+
+                <div class="form-row">
+                    <div>
+                        <label>Fecha de Nacimiento</label>
+                        <input type="date" required class="input1">
+                    </div>
+                    <div>
+                        <label>Sexo</label>
+                        <br>
+                        <select required class="input1">
+                            <option value="">Seleccione</option>
+                            <option value="M">M</option>
+                            <option value="F">F</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label>Teléfono</label>
+                <input class="input1" type="text" placeholder="Ej: 0991234567" required>
+
+                <label>Correo Electrónico</label>
+                <input class="input1" type="email" placeholder="Ej: ejemplo@correo.com" required>
+
+                <button type="submit" class="save-btn1">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Editar Paciente -->
+<div id="editPatientModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <div class="modal-header">
+            <div class="circle-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" fill="black">
+                    <path d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+                </svg>
+            </div>
+            <h2>Editar Paciente</h2>
+        </div>
+        <form class="modal-form" id="editPatientForm">
+            <label>Cédula/Pasaporte</label>
+            <input class="input1" type="text" id="edit-cedula" readonly>
+
+            <label>Nombres</label>
+            <input class="input1" type="text" id="edit-nombres" required>
+
+            <label>Apellidos</label>
+            <input class="input1" type="text" id="edit-apellidos" required>
+
+            <div class="form-row">
+                <div>
+                    <label>Fecha de Nacimiento</label>
+                    <input type="date" id="edit-fecha" class="input1" required>
+                </div>
+                <div>
+                    <label>Sexo</label>
+                    <br>
+                    <select required class="input1" id="edit-sexo">
+                        <option value="">Seleccione</option>
+                        <option value="M">M</option>
+                        <option value="F">F</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>Teléfono</label>
+            <input class="input1" type="text" id="edit-telefono" required>
+
+            <label>Correo Electrónico</label>
+            <input class="input1" type="email" id="edit-correo" required>
+
+            <div class="button-group">
+                <button type="button" class="delete-btn" id="btnEliminarPaciente">Eliminar</button>
+                <button type="submit" class="save-btn">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+    <!-- Modal Añadir Caso -->
+    <div id="addCaseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCaseModal()">&times;</span>
+            <div class="modal-header">
+                <div class="circle-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" fill="black">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+                    </svg>
+                </div>
+                <h2>Añadir Caso</h2>
+            </div>
+            <form class="modal-form" id="addCaseForm">
+                <label>Fecha</label>
+                <input class="input1" type="date" id="fechaCasoHoy" required>
+
+
+                <label>Diagnóstico</label>
+                <input class="input1" type="text" placeholder="Ej: Hipertensión arterial" required>
+
+                <label>Médico tratante</label>
+                <input class="input1" type="text" readonly>
+
+                <label>Tratamiento</label>
+                <input class="input1" type="text" placeholder="Ej: Losartán 50mg diarios" required>
+
+                <label>Observaciones</label>
+                <input class="input1" type="text" placeholder="Ej: Control mensual">
+
+                <div class="button-group">
+                    <button type="submit" class="save-btn">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("Sesión expirada o no iniciada.");
+        window.location.href = "/";
+        return;
+    }
+});
+
+function capitalizarTexto(texto) {
+    return texto
+        .toLowerCase()
+        .split(' ')
+        .map(p => p.charAt(0).toUpperCase() + p.slice(1))
+        .join(' ');
+}
+
+const nombres = capitalizarTexto(localStorage.getItem("nombres") || "");
+const apellidos = capitalizarTexto(localStorage.getItem("apellidos") || "");
+
+const medicoActual = `Dr. ${nombres} ${apellidos}`.trim();
+
+
+function openModal() {
+    const form = document.getElementById("addPatientForm");
+    form.reset();
+
+    const select = form.querySelector("select");
+    if (select) select.selectedIndex = 0;
+
+    const dateInput = form.querySelector("input[type='date']");
+    if (dateInput) dateInput.value = "";
+
+    document.getElementById("addPatientModal").style.display = "block";
+}
+
+function closeModal() {
+    document.getElementById("addPatientModal").style.display = "none";
+}
+
+function openEditModal() {
+    cargarDatosEnModalEdicion();
+    document.getElementById("editPatientModal").style.display = "block";
+}
+
+
+function closeEditModal() {
+    document.getElementById("editPatientModal").style.display = "none";
+}
+
+function openCaseModal() {
+    document.getElementById("addCaseModal").style.display = "block";
+    const medicoInput = document.querySelector("#addCaseModal input[readonly]");
+    if (medicoInput) medicoInput.value = medicoActual;
+}
+function closeCaseModal() {
+    document.getElementById("addCaseModal").style.display = "none";
+}
+
+window.addEventListener("click", function (event) {
+    if (event.target === document.getElementById("addPatientModal")) closeModal();
+    if (event.target === document.getElementById("editPatientModal")) closeEditModal();
+    if (event.target === document.getElementById("addCaseModal")) closeCaseModal();
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const editIcon = document.querySelector(".edit-icon");
+    if (editIcon) editIcon.addEventListener("click", openEditModal);
+});
+
+
+// --- AÑADIR PACIENTE ---
+document.querySelector('#addPatientModal form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const form = document.getElementById("addPatientForm");
+
+    const cedula = form.querySelector('input[type="text"]:nth-of-type(1)').value.trim();
+    const nombres = form.querySelector('input[type="text"]:nth-of-type(2)').value.trim();
+    const apellidos = form.querySelector('input[type="text"]:nth-of-type(3)').value.trim();
+    const fechaRaw = form.querySelector('input[type="date"]').value;
+    const sexo = form.querySelector('select').value;
+    const telefono = form.querySelector('input[type="text"]:nth-of-type(4)').value.trim();
+    const correo = form.querySelector('input[type="email"]').value.trim();
+
+    // REGEX personalizados
+    const nombreRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+    const cedulaDiez = /^\d{10}$/;
+    const cedulaNueve = /^[A-Za-z]{3}\d{6}$/;
+    const telefonoRegex = /^\d{7,10}$/;
+    const correoRegex = /^\S+@\S+\.\S+$/;
+
+    // Validación de cédula 9 o 10 caracteres
+    if (!(cedulaDiez.test(cedula) || cedulaNueve.test(cedula))) {
+        return alert("La cédula debe tener 10 dígitos numéricos o 3 letras seguidas de 6 dígitos (ej: ABC123456).");
+    }
+
+    if (!nombreRegex.test(nombres)) {
+        return alert("El nombre solo debe contener letras y espacios.");
+    }
+
+    if (!nombreRegex.test(apellidos)) {
+        return alert("El apellido solo debe contener letras y espacios.");
+    }
+
+    const hoy = new Date().toISOString().split("T")[0];
+    if (!fechaRaw || fechaRaw > hoy) {
+        return alert("La fecha de nacimiento no puede estar vacía ni ser una fecha futura.");
+    }
+
+    if (!sexo) {
+        return alert("Debe seleccionar el sexo del paciente.");
+    }
+
+    if (!telefonoRegex.test(telefono)) {
+        return alert("El teléfono debe tener entre 7 y 10 dígitos numéricos.");
+    }
+
+    if (!correoRegex.test(correo)) {
+        return alert("El correo electrónico no tiene un formato válido.");
+    }
+
+    const fechaFormateada = new Date(fechaRaw).toISOString().split("T")[0];
+
+    const data = {
+        cedula,
+        nombres,
+        apellidos,
+        fecha_nac: fechaFormateada,
+        sexo,
+        telefono,
+        correo
+    };
+
+    const token = localStorage.getItem("token");
+    if (!token) return alert("Sesión no válida");
+
+    try {
+        const res = await fetch("http://localhost:777/api/patient/add", {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+            mostrarAlerta("Paciente registrado correctamente");
+
+            form.reset();
+            form.querySelector("select").selectedIndex = 0;
+            form.querySelector('input[type="date"]').value = "";
+
+            closeModal();
+            localStorage.removeItem("paciente_id");
+            actualizarPanelPaciente({ ...data, id: result.id });
+            localStorage.setItem("paciente_id", result.id);
+        } else {
+            mostrarAlerta(result.mensaje || "Error al registrar paciente", true);
+        }
+
+    } catch (err) {
+        console.error(err);
+        mostrarAlerta("Error al conectar con el servidor", true);
+    }
+});
+
+
+// FUNCIONES AUXILIARES
+
+function actualizarPanelPaciente(paciente) {
+    const panel = document.querySelector('.patient-info');
+    const edad = paciente.fecha_nac ? calcularEdad(paciente.fecha_nac) : "No disponible";
+
+    panel.innerHTML = `
+        <div class="info-header">
+            <h3>Datos del paciente</h3>
+            <svg class="edit-icon"
+                 data-cedula="${paciente.cedula}"
+                 data-nombres="${paciente.nombres}"
+                 data-apellidos="${paciente.apellidos}"
+                 data-fecha="${paciente.fecha_nac}"
+                 data-sexo="${paciente.sexo}"
+                 data-telefono="${paciente.telefono}"
+                 data-correo="${paciente.correo}"
+                 xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" fill="#000">
+                <path d="M0 0h24v24H0z" fill="none"/>
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+            </svg>
+        </div>
+        <p><strong>Cédula/Pasaporte</strong><br>${paciente.cedula || "No disponible"}</p>
+        <p><strong>Nombres</strong><br>${paciente.nombres || "No disponible"}</p>
+        <p><strong>Apellidos</strong><br>${paciente.apellidos || "No disponible"}</p>
+        <div class="flex-info">
+            <p><strong>Edad</strong><br>${edad}</p>
+            <p><strong>Sexo</strong><br>${paciente.sexo || "No disponible"}</p>
+        </div>
+        <p><strong>Teléfono</strong><br>${paciente.telefono || "No disponible"}</p>
+        <p><strong>Correo electrónico</strong><br>${paciente.correo || "No disponible"}</p>
+         <p><strong>Número de historia clínica</strong><br>HC-${Math.floor(Math.random() * 100000000)}</p>
+    `;
+
+    const editIcon = panel.querySelector(".edit-icon");
+    if (editIcon) editIcon.addEventListener("click", openEditModal);
+}
+
+
+function calcularEdad(fecha_nac) {
+    const hoy = new Date();
+    const nacimiento = new Date(fecha_nac);
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const m = hoy.getMonth() - nacimiento.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+        edad--;
+    }
+    return edad;
+}
+
+function cargarDatosEnModalEdicion() {
+    const icon = document.querySelector('.edit-icon');
+    if (!icon) return;
+
+    const cedula = icon.dataset.cedula || '';
+    const nombres = icon.dataset.nombres || '';
+    const apellidos = icon.dataset.apellidos || '';
+    const fecha = icon.dataset.fecha || '';
+    const sexo = icon.dataset.sexo || '';
+    const telefono = icon.dataset.telefono || '';
+    const correo = icon.dataset.correo || '';
+
+    const modal = document.getElementById("editPatientModal");
+    modal.querySelector('input[type="text"][readonly]').value = cedula;
+    modal.querySelector('#edit-nombres').value = nombres;
+    modal.querySelector('#edit-apellidos').value = apellidos;
+    modal.querySelector('input[type="date"]').value = fecha;
+    modal.querySelector('select').value = sexo;
+    modal.querySelector('#edit-telefono').value = telefono;
+    modal.querySelector('#edit-correo').value = correo;
+}
+
+
+
+
+document.querySelector('#editPatientModal form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const modal = document.getElementById("editPatientModal");
+
+    const cedula = modal.querySelector('#edit-cedula').value.trim();
+    const nombres = modal.querySelector('#edit-nombres').value.trim();
+    const apellidos = modal.querySelector('#edit-apellidos').value.trim();
+    const fecha_nac = modal.querySelector('#edit-fecha').value;
+    const sexo = modal.querySelector('#edit-sexo').value;
+    const telefono = modal.querySelector('#edit-telefono').value.trim();
+    const correo = modal.querySelector('#edit-correo').value.trim();
+
+    // Validaciones
+    const telefonoRegex = /^\d{7,10}$/;
+    const correoRegex = /^\S+@\S+\.\S+$/;
+    const nombreRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+
+    if (!nombreRegex.test(nombres) || !nombreRegex.test(apellidos)) {
+        return mostrarAlerta("Nombres y apellidos solo deben contener letras y espacios.", true);
+    }
+
+    if (!telefonoRegex.test(telefono)) {
+        return mostrarAlerta("El teléfono debe tener entre 7 y 10 dígitos numéricos.", true);
+    }
+    if (!correoRegex.test(correo)) {
+        return mostrarAlerta("El correo electrónico no tiene un formato válido.", true);
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) return mostrarAlerta("Sesión no válida", true);
+
+    try {
+        // Obtener ID del paciente
+        const resBuscar = await fetch(`http://localhost:777/api/patient/search/${cedula}`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const paciente = await resBuscar.json();
+        if (!resBuscar.ok) return mostrarAlerta("Paciente no encontrado", true);
+
+        const idPaciente = paciente.id;
+
+        // Enviar actualización completa (excepto cédula)
+        const resUpdate = await fetch(`http://localhost:777/api/patient/update/${idPaciente}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nombres,
+                apellidos,
+                fecha_nac,
+                sexo,
+                telefono,
+                correo
+            })
+        });
+
+        const resultado = await resUpdate.json();
+
+        if (resUpdate.ok) {
+            mostrarAlerta("Paciente actualizado correctamente");
+
+            actualizarPanelPaciente({
+                cedula,
+                nombres,
+                apellidos,
+                fecha_nac,
+                sexo,
+                telefono,
+                correo
+            });
+
+            closeEditModal();
+        } else {
+            mostrarAlerta(resultado.mensaje || "Error al actualizar paciente", true);
+        }
+    } catch (err) {
+        console.error(err);
+        mostrarAlerta("Error al conectar con el servidor", true);
+    }
+});
+
+
+
+document.getElementById("btnBuscarPaciente").addEventListener("click", async function () {
+    const cedulaInput = document.getElementById("searchCedula");
+    const cedula = cedulaInput.value.trim();
+
+    // Validaciones para cédula o código personalizado
+    const regex10Numeros = /^\d{10}$/;
+    const regex9Alfanumerico = /^[A-Za-z]{3}\d{6}$/;
+
+    if (!cedula) return alert("Ingrese una cédula o código para buscar");
+
+    if (!(regex10Numeros.test(cedula) || regex9Alfanumerico.test(cedula))) {
+        return alert("Ingrese una cédula válida (10 dígitos numéricos) o un código válido (3 letras seguidas de 6 números)");
+    }
+
+    cedulaInput.value = "";
+
+    const token = localStorage.getItem("token");
+    if (!token) return alert("Sesión no válida");
+
+    try {
+        const res = await fetch(`http://localhost:777/api/patient/search/${cedula}`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            document.querySelector('.patient-info').innerHTML = `
+                <div class="info-header">
+                    <h3>Datos del paciente</h3>
+                </div>
+                <p style="text-align: center; color: #666; margin-top: 1rem;">${data.mensaje || "No se encontró el paciente"}</p>
+            `;
+            limpiarTablaCasos();
+        } else {
+            actualizarPanelPaciente(data);
+            limpiarTablaCasos();
+            localStorage.setItem("paciente_id", data.id);
+
+            try {
+                const resCasos = await fetch(`http://localhost:777/api/case/list/${data.id}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                });
+                const casos = await resCasos.json();
+                if (resCasos.ok) {
+                    mostrarCasosMedicos(casos);
+                }
+            } catch (error) {
+                console.error("Error al cargar casos médicos:", error);
+            }
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Error al buscar el paciente");
+    }
+});
+
+
+function limpiarTablaCasos() {
+    const tbody = document.querySelector(".cases-panel table tbody");
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align:center; color:#999;">Sin casos médicos disponibles</td>
+            </tr>
+        `;
+    }
+}
+
+document.querySelector('#addCaseForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const paciente_id = localStorage.getItem("paciente_id");
+    if (!paciente_id) return mostrarAlerta("Debe seleccionar un paciente antes de registrar el caso");
+
+    const inputs = document.querySelectorAll('#addCaseForm .input1');
+    const fecha = document.getElementById("fechaCasoHoy").value.trim();
+    const diagnostico = inputs[0].value.trim();
+    const medico = medicoActual;
+    const tratamiento = inputs[2].value.trim();
+    const observaciones = inputs[3].value.trim();
+
+    // Validaciones
+    const textoLibreRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s.,()/-]{3,}$/;
+    const hoy = new Date().toISOString().split("T")[0];
+
+    if (!fecha || fecha > hoy) {
+        return alert("La fecha debe ser válida y no futura.");
+    }
+    if (!textoLibreRegex.test(diagnostico)) {
+        return alert("El diagnóstico debe tener al menos 3 caracteres y contener solo texto válido.");
+    }
+    if (!textoLibreRegex.test(tratamiento)) {
+        return alert("El tratamiento debe tener al menos 3 caracteres y contener solo texto válido.");
+    }
+    if (observaciones && observaciones.length > 0 && !textoLibreRegex.test(observaciones)) {
+        return alert("Las observaciones contienen caracteres no válidos o son demasiado cortas.");
+    }
+
+    const data = {
+        paciente_id: parseInt(paciente_id),
+        fecha_atencion: new Date(fecha).toISOString().split("T")[0],
+        diagnostico,
+        medico,
+        tratamiento,
+        observaciones
+    };
+
+    const token = localStorage.getItem("token");
+    if (!token) return alert("Sesión no válida");
+
+    try {
+        const res = await fetch("http://localhost:777/api/case/register", {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+            mostrarAlerta("Caso clínico registrado correctamente");
+            document.querySelector('#addCaseForm').reset();
+            closeCaseModal();
+
+            // Recargar todos los casos médicos actualizados desde el backend
+            try {
+                const resCasos = await fetch(`http://localhost:777/api/case/list/${paciente_id}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                });
+
+                const casosActualizados = await resCasos.json();
+                if (resCasos.ok) {
+                    mostrarCasosMedicos(casosActualizados);
+                } else {
+                    console.warn("No se pudieron recargar los casos médicos:", casosActualizados.mensaje);
+                }
+            } catch (error) {
+                console.error("Error al recargar casos médicos:", error);
+            }
+
+        } else {
+            mostrarAlerta(result.mensaje || "Error al registrar caso");
+        }
+    } catch (err) {
+        console.error(err);
+        mostrarAlerta("Error al conectar con el servidor");
+    }
+});
+
+function mostrarCasosMedicos(casos) {
+    const tbody = document.querySelector(".cases-panel table tbody");
+    if (!tbody) return;
+
+    if (!casos.length) {
+        return limpiarTablaCasos();
+    }
+
+    casos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+    tbody.innerHTML = casos.map(caso => `
+        <tr>
+            <td>${caso.fecha}</td>
+            <td>${caso.diagnostico}</td>
+            <td>${caso.medico}</td>
+            <td>${caso.tratamiento}</td>
+            <td>${caso.observaciones}</td>
+        </tr>
+    `).join('');
+}
+
+document.getElementById("btnEliminarPaciente").addEventListener("click", async function () {
+    const modal = document.getElementById("editPatientModal");
+    const cedula = modal.querySelector('input[readonly][type="text"]').value.trim();
+
+    if (!cedula) return alert("Cédula no válida");
+
+    const confirmacion = confirm("¿Estás seguro de eliminar este paciente?");
+    if (!confirmacion) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) return alert("Sesión no válida");
+
+    try {
+        // Primero obtenemos el ID del paciente a partir de su cédula
+        const resBuscar = await fetch(`http://localhost:777/api/patient/search/${cedula}`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const paciente = await resBuscar.json();
+        if (!resBuscar.ok) return alert("Paciente no encontrado");
+
+        const idPaciente = paciente.id;
+
+        // Ahora hacemos el DELETE
+        const resDelete = await fetch(`http://localhost:777/api/patient/delete/${idPaciente}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const result = await resDelete.json();
+        if (resDelete.ok) {
+            mostrarAlerta("Paciente eliminado correctamente");
+
+            // Limpiar la UI
+            document.querySelector('.patient-info').innerHTML = `
+                <div class="info-header">
+                    <h3>Datos del paciente</h3>
+                </div>
+                <p style="text-align: center; color: #666; margin-top: 1rem;">No hay paciente seleccionado</p>
+            `;
+            limpiarTablaCasos();
+            closeEditModal();
+        } else {
+            mostrarAlerta(result.mensaje || "Error al eliminar paciente");
+        }
+    } catch (err) {
+        console.error(err);
+        mostrarAlerta("Error al conectar con el servidor");
+    }
+});
+
+function mostrarAlerta(mensaje, esError = false) {
+    const alerta = document.getElementById("mensajeAlerta");
+    alerta.textContent = mensaje;
+    alerta.classList.toggle("error", esError);
+    alerta.style.display = "block";
+
+    setTimeout(() => {
+        alerta.style.display = "none";
+    }, 3000); // Ocultar después de 3 segundos
+}
+
+function cerrarSesion() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("paciente_id");
+    window.location.href = "/";  // <-- Ajusta esta URL si tu ruta de login es distinta
+}
+
+</script>
+
+
+</body>
+
+<div id="mensajeAlerta" class="alerta" style="display:none;"></div>
+
+
+</html>
+

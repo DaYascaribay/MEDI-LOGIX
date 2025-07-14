@@ -1,0 +1,419 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #cfe6ff;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-box {
+    background-color: white;
+    padding: 40px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 300px;
+}
+
+.logo {
+    width: 100px;
+    margin-bottom: 10px;
+}
+
+.login-box h2 {
+    margin-bottom: 20px;
+    font-weight: normal;
+}
+
+.login-box input[type="text"],
+.login-box input[type="password"] {
+    width: 90%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.show-password {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    margin: 10px 0;
+}
+
+.show-password input {
+    margin-right: 5px;
+}
+
+.login-box button {
+    width: 100%;
+    padding: 10px;
+    background-color: #d5e4fa;
+    border: 1px solid #8aa8d8;
+    color: black;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.login-box button:hover {
+    background-color: #b8d2f0;
+}
+
+.note {
+    font-size: 19px;
+    color: gray;
+    margin-top: 10px;
+}
+
+.image-box {
+    margin-left: 50px;
+}
+
+.doctor-image {
+    width: 400px;
+}
+
+
+/* Estilo para el dashboard */
+.dashboard-container {
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.logo-text {
+    font-weight: bold;
+    font-size: 20px;
+    color: #1a3e85;
+}
+
+.search-area {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.search-area input {
+    padding: 8px;
+    border-radius: 12px;
+    border: none;
+    width: 300px;
+}
+
+.search-area button {
+    background-color: #b8d2f0;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.add-pac-btn {
+    background-color: #b8d2f0;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 20px;
+}
+
+.main-panel {
+    display: flex;
+    gap: 20px;
+}
+
+.patient-info {
+    width: 250px;
+    background-color: #fff;
+    padding: 16px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.patient-info p {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.patient-info .flex-info {
+    display: flex;
+    gap: 50px
+}
+
+.info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.edit-icon {
+    cursor: pointer;
+}
+
+
+.cases-panel {
+    flex: 1;
+    background-color: #fff;
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cases-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    background-color: #e3f0ff;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.add-case-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: #d2e6ff;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    font-size: 14px;
+    vertical-align: top;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Modal General */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
+
+/* Contenedor del Modal */
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 8px;
+    width: 400px;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Botón de cerrar */
+.modal-content .close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Formulario dentro del modal */
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-form input,
+.modal-form select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.form-row div {
+    flex: 1;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center; 
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.6rem;
+    color: black;
+}
+
+.circle-icon {
+    width: 38px;
+    height: 38px;
+    background-color: #b8d2f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.circle-icon svg {
+    width: 25px;
+    height: 25px;
+    fill: black;
+}
+
+.input1{
+    background-color: #CCE5FF
+}
+
+/* Botón guardar */
+.save-btn {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #b8d2f0;
+    color: black;
+    font-weight: bold;
+    border: 1px solid #1a3e85;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100px;
+}
+
+.save-btn:hover {
+    background-color: #739ae9;
+}
+
+.save-btn1 {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #b8d2f0;
+    color: black;
+    font-weight: bold;
+    border: 1px solid #1a3e85;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100px;
+    margin: 10px auto 0 auto;
+}
+
+.save-btn1:hover {
+    background-color: #739ae9;
+}
+
+
+.delete-btn {
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #d17c77;
+    border: 1px solid #dd211a;
+    color: black;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100px;
+}
+
+.delete-btn:hover {
+    background-color: #cf3d3d;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+    gap: 25px;
+}
+
+#mensajeAlerta {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    background-color: #1a73e8; /* Azul institucional */
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-weight: bold;
+    display: none;
+    max-width: 320px;
+    animation: fadeInOut 3s ease forwards;
+    font-family: "Arial", sans-serif;
+    font-size: 14px;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+#mensajeAlerta.error {
+    background-color: #e53935; /* Rojo fuerte para errores */
+}
+
+
+@keyframes fadeInOut {
+    0%   { opacity: 0; transform: translateY(-10px); }
+    10%  { opacity: 1; transform: translateY(0); }
+    90%  { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-10px); }
+}
+
+.logout-btn {
+    margin-left: 10px;
+    background-color: #ffcccc;
+    border: 1px solid #b30000;
+    color: #b30000;
+    padding: 8px 14px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.logout-btn:hover {
+    background-color: #ff9999;
+}

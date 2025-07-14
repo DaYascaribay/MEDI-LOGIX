@@ -1,0 +1,9 @@
+Flask
+Flask-JWT-Extended
+Flask-Cors
+Flask-SQLAlchemy
+pymysql
+Werkzeug
+cryptography
+pytest
+pytest-flask

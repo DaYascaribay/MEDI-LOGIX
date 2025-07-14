@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Administración - Medi Logix</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .datetime-display {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .admin-table th{
+            padding: 10px;
+            text-align: center;
+            font-size: 17px;
+            background-color: #cfe6ff;
+        }
+        .admin-table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+            background-color: white;
+        }
+        .action-btn {
+            margin: 0 5px;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+        .edit-btn {
+            background-color: #b8d2f0;
+            border: 1px solid #1a3e85;
+        }
+        .delete-btn {
+            background-color: #f8c0c0;
+            border: 1px solid #a94442;
+        }
+        .lista{
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            font-size: 20px;
+            height: 30px;
+            margin: 0 auto;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="header">
+            <div class="logo-area">
+                <img src="{{ url_for('static', filename='medico.png') }}" alt="Logo" class="logo-icon">
+                <span class="logo-text">MEDI LOGIX</span>
+                <button class="add-pac-btn" onclick="openAddDoctorModal()">AGREGAR MÉDICO</button>
+                <button class="logout-btn" onclick="cerrarSesion()">CERRAR SESIÓN</button>
+            </div>
+            <div class="datetime-display" id="datetime"></div>
+        </header>
+        <h2 class="lista">Personal Médico Registrado</h2>
+        <main class="main-panel">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Apellidos</th>
+                        <th>Cédula</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>Fecha Nacimiento</th>
+                        <th>Especialidad</th>
+                        <th>Usuario</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+    <!-- Modal Añadir Médico -->
+<div id="addDoctorModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeAddDoctorModal()">&times;</span>
+        <div class="modal-header">
+            <div class="circle-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" fill="black">
+                    <path d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+                </svg>
+            </div>
+            <h2>Añadir Médico</h2>
+        </div>
+        <form class="modal-form">
+            <label>Cédula/Pasaporte</label>
+            <input class="input1" type="text" placeholder="Ej: 1711576786" required>
+
+            <label>Nombres</label>
+            <input class="input1" type="text" placeholder="Ej: María Gabriela Torres" required>
+            
+            <label>Apellidos</label>
+            <input class="input1" type="text" placeholder="Ej: Torres" required>
+
+            <label>Especialidad</label>
+            <input class="input1" type="text" placeholder="Ej: Cardiología" required>
+
+            <label>Teléfono</label>
+            <input class="input1" type="text" placeholder="Ej: 0991234567" required>
+
+            <label>Fecha de Nacimiento</label>
+            <input class="input1" type="date" id="add-fecha" required>
+
+            <label>Correo Electrónico</label>
+            <input class="input1" type="email" placeholder="Ej: ejemplo@correo.com" required>
+
+            <label>Contraseña</label>
+            <input class="input1" type="password" placeholder="Ej: 1234abc" required>
+
+            <div class="button-group">
+                <button type="submit" class="save-btn">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Editar Médico -->
+<div id="editDoctorModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditDoctorModal()">&times;</span>
+        <div class="modal-header">
+            <div class="circle-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" fill="black">
+                    <path d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+                </svg>
+            </div>
+            <h2>Editar Médico</h2>
+        </div>
+
+        <form id="editDoctorForm" class="modal-form">
+            <input type="hidden" id="edit-id">
+
+            <label>Nombres</label>
+            <input class="input1" type="text" id="edit-nombres" required>
+
+            <label>Apellidos</label>
+            <input class="input1" type="text" id="edit-apellidos" required>
+
+            <label>Especialidad</label>
+            <input class="input1" type="text" id="edit-especialidad" required>
+
+            <label>Teléfono</label>
+            <input class="input1" type="text" id="edit-telefono" required>
+            
+            <label>Fecha de Nacimiento</label>
+            <input class="input1" type="date" id="edit-fecha" required>
+
+            <label>Correo Electrónico</label>
+            <input class="input1" type="email" id="edit-correo" required>
+
+            <label>Contraseña Nueva</label>
+            <input class="input1" type="password" id="edit-password" placeholder="Ej: 1234abc">
+
+            <div class="button-group">
+                <button type="submit" class="save-btn">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem("token");
+    const rol = localStorage.getItem("rol");
+
+    if (!token || rol !== "admin") {
+        alert("Acceso denegado. Debes iniciar sesión como administrador.");
+        window.location.href = "/";
+    }
+});
+        function updateDateTime() {
+            const now = new Date();
+            const date = now.toLocaleDateString('es-EC', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const time = now.toLocaleTimeString('es-EC');
+            document.getElementById('datetime').textContent = `${date} | ${time}`;
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        function openAddDoctorModal() {
+            document.getElementById("addDoctorModal").style.display = "block";
+        }
+
+        function closeAddDoctorModal() {
+            document.getElementById("addDoctorModal").style.display = "none";
+        }
+
+        window.addEventListener("click", function(event) {
+            if (event.target === document.getElementById("addDoctorModal")) {
+                closeAddDoctorModal();
+            }
+        });
+
+        function openEditDoctorModal() {
+            document.getElementById("editDoctorModal").style.display = "block";
+        }
+
+        function closeEditDoctorModal() {
+            document.getElementById("editDoctorModal").style.display = "none";
+        }
+
+        window.addEventListener("click", function(event) {
+            if (event.target === document.getElementById("editDoctorModal")) {
+                closeEditDoctorModal();
+            }
+        });
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+        const res = await fetch("http://localhost:777/api/admin/medicos", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const data = await res.json();
+        if (!res.ok) return alert(data.mensaje || "Error al obtener médicos");
+
+        const tbody = document.querySelector(".admin-table tbody");
+        tbody.innerHTML = ""; // limpia el tbody antes de llenar
+
+        data.forEach(medico => {
+            const row = document.createElement("tr");
+            row.dataset.id = medico.id;
+
+            row.innerHTML = `
+                <td>${medico.nombres || '-'}</td>
+                <td>${medico.apellidos || '-'}</td>
+                <td>${medico.cedula || '-'}</td>
+                <td>${medico.correo || '-'}</td>
+                <td>${medico.telefono || '-'}</td>
+                <td>${medico.fecha_nacimiento || '-'}</td>
+                <td>${medico.especialidad || '-'}</td>
+                <td>${medico.usuario || '-'}</td>
+                <td>
+                    <button class="action-btn edit-btn">Editar</button>
+                <button class="action-btn delete-btn toggle-btn">
+                    ${medico.activo ? 'Inhabilitar' : 'Habilitar'}
+                </button>
+
+                </td>
+
+            `;
+            tbody.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error("Error al cargar médicos:", error);
+        alert("Error al conectar con el servidor.");
+    }
+});
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("#addDoctorModal form");
+    if (!form) return;
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const inputs = this.querySelectorAll("input");
+
+        const cedula = inputs[0].value.trim();
+        const nombres = inputs[1].value.trim();
+        const apellidos = inputs[2].value.trim();
+        const usuario = `${nombres.split(" ")[0].toLowerCase()}.${apellidos.split(" ")[0].toLowerCase()}`;
+        const especialidad = inputs[3].value.trim();
+        const telefono = inputs[4].value.trim();
+        const fecha_nacimiento = document.getElementById("add-fecha").value;
+        const correo = inputs[6].value.trim();
+        const password = inputs[7].value.trim();
+
+        if (!cedula || !nombres || !apellidos || !especialidad || !telefono || !fecha_nacimiento || !correo || !password) {
+            return alert("Todos los campos son obligatorios");
+        }
+
+        // ------------------ VALIDACIONES PERSONALIZADAS ------------------
+        const nombreRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+        const telefonoRegex = /^\d{7,10}$/;
+        const correoRegex = /^\S+@\S+\.\S+$/;
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+
+        function validarCedula(ced) {
+            if (ced.length === 10) {
+                return /^\d{10}$/.test(ced);
+            } else if (ced.length === 9) {
+                return /^[A-Za-z]{3}\d{6}$/.test(ced);
+            }
+            return false;
+        }
+
+        if (!validarCedula(cedula)) {
+            return alert("La cédula debe tener 10 dígitos numéricos o 3 letras seguidas de 6 dígitos (ej: ABC123456).");
+        }
+        if (!nombreRegex.test(nombres)) {
+            return alert("El campo nombres solo debe contener letras y espacios.");
+        }
+        if (!nombreRegex.test(apellidos)) {
+            return alert("El campo apellidos solo debe contener letras y espacios.");
+        }
+        if (!nombreRegex.test(especialidad) || especialidad.length < 3) {
+            return alert("La especialidad debe tener al menos 3 letras y solo contener texto.");
+        }
+        if (!telefonoRegex.test(telefono)) {
+            return alert("El teléfono debe contener entre 7 y 10 dígitos numéricos.");
+        }
+        if (!correoRegex.test(correo)) {
+            return alert("El correo electrónico no es válido.");
+        }
+        if (!passwordRegex.test(password)) {
+            return alert("La contraseña debe tener al menos 6 caracteres, incluyendo una letra y un número.");
+        }
+        if (!fecha_nacimiento) {
+            return alert("La fecha de nacimiento es obligatoria.");
+        }
+
+        const nacimiento = new Date(fecha_nacimiento);
+        const hoyDate = new Date();
+        let edad = hoyDate.getFullYear() - nacimiento.getFullYear();
+        const m = hoyDate.getMonth() - nacimiento.getMonth();
+        if (m < 0 || (m === 0 && hoyDate.getDate() < nacimiento.getDate())) {
+            edad--;
+        }
+
+        if (edad < 18 || edad > 80) {
+            return alert("La edad debe estar entre 18 y 80 años.");
+        }
+
+
+        // ------------------ ENVÍO ------------------
+        const token = localStorage.getItem("token");
+        if (!token) return alert("Sesión no válida");
+
+        const body = {
+            usuario,
+            password,
+            cedula,
+            nombres,
+            apellidos,
+            correo,
+            especialidad,
+            fecha_nacimiento,
+            telefono
+        };
+
+        console.log("📤 Enviando datos del nuevo médico:", body);
+
+        try {
+            const res = await fetch("http://localhost:777/api/admin/crear_medico", {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            });
+
+            const data = await res.json();
+            console.log("📥 Respuesta del backend:", data);
+
+            if (res.ok) {
+                alert("✅ Médico registrado correctamente");
+                this.reset();
+                closeAddDoctorModal();
+                location.reload();
+            } else {
+                alert(data.mensaje || "Error al registrar médico");
+            }
+
+        } catch (err) {
+            console.error("❌ Error al registrar médico:", err);
+            alert("Error al conectar con el servidor");
+        }
+    });
+});
+
+
+
+document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("edit-btn")) {
+        const row = e.target.closest("tr");
+        const cells = row.querySelectorAll("td");
+
+        const nombres = cells[0].textContent.trim();
+        const apellidos = cells[1].textContent.trim();
+        const correo = cells[3].textContent.trim();
+        const telefono = cells[4].textContent.trim();
+        const rawFecha = cells[5].textContent.trim();
+        const especialidad = cells[6].textContent.trim();
+
+
+        let fechaFormateada = "";
+        if (rawFecha) {
+            const fecha = new Date(rawFecha);
+            fechaFormateada = fecha.toISOString().split("T")[0];  // yyyy-mm-dd
+        }
+
+        openEditDoctorModal();
+
+        document.getElementById("edit-nombres").value = nombres;
+        document.getElementById("edit-apellidos").value = apellidos;
+        document.getElementById("edit-correo").value = correo;
+        document.getElementById("edit-telefono").value = telefono;
+        document.getElementById("edit-fecha").value = rawFecha;
+        document.getElementById("edit-especialidad").value = especialidad;
+        document.getElementById("edit-id").value = row.dataset.id || "";
+    }
+});
+
+
+document.getElementById("editDoctorForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const token = localStorage.getItem("token");
+    const id = document.getElementById("edit-id").value;
+
+    const nombres = document.getElementById("edit-nombres").value.trim();
+    const apellidos = document.getElementById("edit-apellidos").value.trim();
+    const correo = document.getElementById("edit-correo").value.trim();
+    const telefono = document.getElementById("edit-telefono").value.trim();
+    const especialidad = document.getElementById("edit-especialidad").value.trim();
+    const fecha_nacimiento = document.getElementById("edit-fecha").value;
+    const nuevaContrasena = document.getElementById("edit-password").value;
+
+    // Validaciones mínimas...
+    if ( !nombres || !apellidos || !correo || !telefono || !especialidad || !fecha_nacimiento) {
+        return alert("Todos los campos son obligatorios.");
+    }
+
+    // Validación de edad entre 18 y 120
+    const nacimiento = new Date(fecha_nacimiento);
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const m = hoy.getMonth() - nacimiento.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
+    if (edad < 18 || edad > 120) {
+        return alert("La edad debe estar entre 18 y 120 años.");
+    }
+
+    const body = {
+        nombres,
+        apellidos,
+        correo,
+        telefono,
+        especialidad,
+        fecha_nacimiento
+    };
+
+    if (nuevaContrasena.trim().length > 0) {
+        body.password = nuevaContrasena;
+    }
+
+    try {
+        const res = await fetch(`http://localhost:777/api/admin/medico/${id}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            alert("✅ Médico actualizado correctamente");
+            closeEditDoctorModal();
+            location.reload();
+        } else {
+            alert(data.mensaje || "Error al actualizar");
+        }
+    } catch (err) {
+        console.error("❌ Error:", err);
+        alert("No se pudo conectar con el servidor");
+    }
+});
+
+
+
+function cerrarSesion() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("paciente_id");
+    window.location.href = "/";  // <-- Ajusta esta URL si tu ruta de login es distinta
+}
+
+document.addEventListener("click", async function (e) {
+    if (e.target.classList.contains("toggle-btn")) {
+        const row = e.target.closest("tr");
+        const id = row.dataset.id;
+        const token = localStorage.getItem("token");
+
+        try {
+            const res = await fetch(`http://localhost:777/api/admin/toggle_medico/${id}`, {
+                method: "PATCH",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                const btn = e.target;
+                // Cambiar texto del botón según respuesta del servidor
+                btn.textContent = (btn.textContent === "Habilitar") ? "Inhabilitar" : "Habilitar";
+                alert(data.mensaje);
+            } else {
+                alert(data.mensaje || "Error al cambiar estado del médico");
+            }
+        } catch (err) {
+            alert("Error al conectar con el servidor");
+        }
+    }
+});
+</script>
+</body>
+</html>
