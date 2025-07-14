@@ -275,7 +275,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 
-
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector("#addDoctorModal form");
     if (!form) return;
@@ -297,6 +296,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!cedula || !nombres || !apellidos || !especialidad || !telefono || !fecha_nacimiento || !correo || !password) {
             return alert("Todos los campos son obligatorios");
+        }
+
+        // VALIDACIONES PERSONALIZADAS
+        const nombreRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+        const cedulaRegex = /^\d{9,10}$/;
+        const telefonoRegex = /^\d{7,10}$/;
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+
+        if (!cedulaRegex.test(cedula)) {
+            return alert("La cédula debe tener exactamente 10 dígitos numéricos.");
+        }
+        if (!nombreRegex.test(nombres)) {
+            return alert("El campo nombres solo debe contener letras y espacios.");
+        }
+        if (!nombreRegex.test(apellidos)) {
+            return alert("El campo apellidos solo debe contener letras y espacios.");
+        }
+        if (!nombreRegex.test(especialidad) || especialidad.length < 3) {
+            return alert("La especialidad debe tener al menos 3 letras y solo contener texto.");
+        }
+        if (!telefonoRegex.test(telefono)) {
+            return alert("El teléfono debe contener entre 7 y 10 dígitos numéricos.");
+        }
+        if (!/\S+@\S+\.\S+/.test(correo)) {
+            return alert("El correo electrónico no es válido.");
+        }
+        if (!passwordRegex.test(password)) {
+            return alert("La contraseña debe tener al menos 6 caracteres, incluyendo una letra y un número.");
+        }
+        const hoy = new Date().toISOString().split("T")[0];
+        if (!fecha_nacimiento || fecha_nacimiento > hoy) {
+            return alert("La fecha de nacimiento no puede estar vacía ni ser una fecha futura.");
         }
 
         const token = localStorage.getItem("token");
@@ -346,6 +377,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+
 document.addEventListener("click", function (e) {
     if (e.target.classList.contains("edit-btn")) {
         const row = e.target.closest("tr");
@@ -384,13 +416,46 @@ document.getElementById("editDoctorForm").addEventListener("submit", async funct
     const token = localStorage.getItem("token");
     const id = document.getElementById("edit-id").value;
 
+    // Capturar valores
+    const nombres = document.getElementById("edit-nombres").value.trim();
+    const apellidos = document.getElementById("edit-apellidos").value.trim();
+    const correo = document.getElementById("edit-correo").value.trim();
+    const telefono = document.getElementById("edit-telefono").value.trim();
+    const especialidad = document.getElementById("edit-especialidad").value.trim();
+    const fecha_nacimiento = document.getElementById("edit-fecha").value;
+
+    // Validaciones
+    const nombreRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+    const telefonoRegex = /^\d{7,10}$/;
+
+    if (!nombreRegex.test(nombres)) {
+        return alert("El campo nombres solo debe contener letras y espacios.");
+    }
+    if (!nombreRegex.test(apellidos)) {
+        return alert("El campo apellidos solo debe contener letras y espacios.");
+    }
+    if (!nombreRegex.test(especialidad) || especialidad.length < 3) {
+        return alert("La especialidad debe tener al menos 3 letras y solo contener texto.");
+    }
+    if (!telefonoRegex.test(telefono)) {
+        return alert("El teléfono debe contener entre 7 y 10 dígitos numéricos.");
+    }
+    if (!/\S+@\S+\.\S+/.test(correo)) {
+        return alert("El correo electrónico no es válido.");
+    }
+    const hoy = new Date().toISOString().split("T")[0];
+    if (!fecha_nacimiento || fecha_nacimiento > hoy) {
+        return alert("La fecha de nacimiento no puede estar vacía ni ser una fecha futura.");
+    }
+
+    // Armar cuerpo de la solicitud
     const body = {
-        nombres: document.getElementById("edit-nombres").value.trim(),
-        apellidos: document.getElementById("edit-apellidos").value.trim(),
-        correo: document.getElementById("edit-correo").value.trim(),
-        telefono: document.getElementById("edit-telefono").value.trim(),
-        especialidad: document.getElementById("edit-especialidad").value.trim(),
-        fecha_nacimiento: document.getElementById("edit-fecha").value
+        nombres,
+        apellidos,
+        correo,
+        telefono,
+        especialidad,
+        fecha_nacimiento
     };
 
     try {
@@ -405,7 +470,7 @@ document.getElementById("editDoctorForm").addEventListener("submit", async funct
 
         const data = await res.json();
         if (res.ok) {
-            alert("Médico actualizado correctamente");
+            alert("✅ Médico actualizado correctamente");
             closeEditDoctorModal();
             location.reload();
         } else {
