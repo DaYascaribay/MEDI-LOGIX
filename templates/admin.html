@@ -438,39 +438,29 @@ document.getElementById("editDoctorForm").addEventListener("submit", async funct
     const token = localStorage.getItem("token");
     const id = document.getElementById("edit-id").value;
 
-    // Capturar valores
     const nombres = document.getElementById("edit-nombres").value.trim();
     const apellidos = document.getElementById("edit-apellidos").value.trim();
     const correo = document.getElementById("edit-correo").value.trim();
     const telefono = document.getElementById("edit-telefono").value.trim();
     const especialidad = document.getElementById("edit-especialidad").value.trim();
     const fecha_nacimiento = document.getElementById("edit-fecha").value;
+    const nuevaContrasena = document.getElementById("edit-password").value;
 
-    // Validaciones
-    const nombreRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
-    const telefonoRegex = /^\d{7,10}$/;
-
-    if (!nombreRegex.test(nombres)) {
-        return alert("El campo nombres solo debe contener letras y espacios.");
-    }
-    if (!nombreRegex.test(apellidos)) {
-        return alert("El campo apellidos solo debe contener letras y espacios.");
-    }
-    if (!nombreRegex.test(especialidad) || especialidad.length < 3) {
-        return alert("La especialidad debe tener al menos 3 letras y solo contener texto.");
-    }
-    if (!telefonoRegex.test(telefono)) {
-        return alert("El teléfono debe contener entre 7 y 10 dígitos numéricos.");
-    }
-    if (!/\S+@\S+\.\S+/.test(correo)) {
-        return alert("El correo electrónico no es válido.");
-    }
-    const hoy = new Date().toISOString().split("T")[0];
-    if (!fecha_nacimiento || fecha_nacimiento > hoy) {
-        return alert("La fecha de nacimiento no puede estar vacía ni ser una fecha futura.");
+    // Validaciones mínimas...
+    if ( !nombres || !apellidos || !correo || !telefono || !especialidad || !fecha_nacimiento) {
+        return alert("Todos los campos son obligatorios.");
     }
 
-    // Armar cuerpo de la solicitud
+    // Validación de edad entre 18 y 120
+    const nacimiento = new Date(fecha_nacimiento);
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const m = hoy.getMonth() - nacimiento.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
+    if (edad < 18 || edad > 120) {
+        return alert("La edad debe estar entre 18 y 120 años.");
+    }
+
     const body = {
         nombres,
         apellidos,
@@ -479,6 +469,10 @@ document.getElementById("editDoctorForm").addEventListener("submit", async funct
         especialidad,
         fecha_nacimiento
     };
+
+    if (nuevaContrasena.trim().length > 0) {
+        body.password = nuevaContrasena;
+    }
 
     try {
         const res = await fetch(`http://localhost:777/api/admin/medico/${id}`, {
@@ -503,6 +497,7 @@ document.getElementById("editDoctorForm").addEventListener("submit", async funct
         alert("No se pudo conectar con el servidor");
     }
 });
+
 
 
 function cerrarSesion() {

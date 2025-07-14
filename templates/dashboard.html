@@ -425,6 +425,7 @@ function cargarDatosEnModalEdicion() {
 
     const cedula = icon.dataset.cedula || '';
     const nombres = icon.dataset.nombres || '';
+    const apellidos = icon.dataset.apellidos || '';  // <- Te faltaba esta línea
     const fecha = icon.dataset.fecha || '';
     const sexo = icon.dataset.sexo || '';
     const telefono = icon.dataset.telefono || '';
@@ -433,11 +434,13 @@ function cargarDatosEnModalEdicion() {
     const modal = document.getElementById("editPatientModal");
     modal.querySelectorAll("input")[0].value = cedula;
     modal.querySelectorAll("input")[1].value = nombres;
-    modal.querySelectorAll("input")[2].value = fecha;
+    modal.querySelectorAll("input")[2].value = apellidos;  // <- ahora correcto
+    modal.querySelector("input[type='date']").value = fecha;
     modal.querySelector("select").value = sexo;
     modal.querySelector("input[type='text']:not([readonly])").value = telefono;
     modal.querySelector("input[type='email']").value = correo;
 }
+
 
 
 document.querySelector('#editPatientModal form').addEventListener('submit', async function (e) {
