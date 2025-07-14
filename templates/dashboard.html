@@ -338,7 +338,7 @@ document.querySelector('#addPatientModal form').addEventListener('submit', async
 
 function actualizarPanelPaciente(paciente) {
     const panel = document.querySelector('.patient-info');
-    const edad = calcularEdad(paciente.fecha_nac);
+    const edad = paciente.fecha_nac ? calcularEdad(paciente.fecha_nac) : "No disponible";
 
     panel.innerHTML = `
         <div class="info-header">
@@ -346,6 +346,7 @@ function actualizarPanelPaciente(paciente) {
             <svg class="edit-icon"
                  data-cedula="${paciente.cedula}"
                  data-nombres="${paciente.nombres}"
+                 data-apellidos="${paciente.apellidos}"
                  data-fecha="${paciente.fecha_nac}"
                  data-sexo="${paciente.sexo}"
                  data-telefono="${paciente.telefono}"
@@ -355,15 +356,16 @@ function actualizarPanelPaciente(paciente) {
                 <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
             </svg>
         </div>
-        <p><strong>Cédula/Pasaporte</strong><br>${paciente.cedula}</p>
-        <p><strong>Nombres Completos</strong><br>${paciente.nombres}</p>
+        <p><strong>Cédula/Pasaporte</strong><br>${paciente.cedula || "No disponible"}</p>
+        <p><strong>Nombres</strong><br>${paciente.nombres || "No disponible"}</p>
+        <p><strong>Apellidos</strong><br>${paciente.apellidos || "No disponible"}</p>
         <div class="flex-info">
             <p><strong>Edad</strong><br>${edad}</p>
-            <p><strong>Sexo</strong><br>${paciente.sexo}</p>
+            <p><strong>Sexo</strong><br>${paciente.sexo || "No disponible"}</p>
         </div>
-        <p><strong>Teléfono</strong><br>${paciente.telefono}</p>
-        <p><strong>Correo electrónico</strong><br>${paciente.correo}</p>
-        <p><strong>Número de historia clínica</strong><br>HC-${Math.floor(Math.random() * 100000000)}</p>
+        <p><strong>Teléfono</strong><br>${paciente.telefono || "No disponible"}</p>
+        <p><strong>Correo electrónico</strong><br>${paciente.correo || "No disponible"}</p>
+        <p><strong>Número de historia clínica</strong><br>${paciente.historia_clinica || "No asignado"}</p>
     `;
 
     const editIcon = panel.querySelector(".edit-icon");
