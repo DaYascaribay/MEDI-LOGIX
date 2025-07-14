@@ -28,6 +28,8 @@ def login():
         return jsonify({
             "token": token,
             "rol": rol_str,
+            "nombres": medico.nombres,
+            "apellidos": medico.apellidos,
             "mensaje": "Acceso exitoso"
         }), 200
     else:

@@ -58,6 +58,8 @@
                     if (res.ok && data.token) {
                         localStorage.setItem("token", data.token);
                         localStorage.setItem("rol", data.rol);
+                        localStorage.setItem("nombres", data.nombres);
+                        localStorage.setItem("apellidos", data.apellidos);
 
                         if (data.rol === "admin") {
                             window.location.href = "/admin";

@@ -208,7 +208,19 @@
     }
 });
 
-const medicoActual = "Dr. Mario Romero";
+function capitalizarTexto(texto) {
+    return texto
+        .toLowerCase()
+        .split(' ')
+        .map(p => p.charAt(0).toUpperCase() + p.slice(1))
+        .join(' ');
+}
+
+const nombres = capitalizarTexto(localStorage.getItem("nombres") || "");
+const apellidos = capitalizarTexto(localStorage.getItem("apellidos") || "");
+
+const medicoActual = `Dr. ${nombres} ${apellidos}`.trim();
+
 
 function openModal() {
     const form = document.getElementById("addPatientForm");
