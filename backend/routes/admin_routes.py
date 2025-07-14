@@ -130,25 +130,6 @@ def actualizar_medico(id):
         return jsonify({"mensaje": f"Error: {str(e)}"}), 500
 
 
-@admin_bp.route("/api/admin/medico/<int:id>", methods=["DELETE"])
-@jwt_required()
-def eliminar_medico(id):
-    claims = get_jwt()
-    if not claims.get("rol"):
-        return jsonify({"mensaje": "Acceso denegado"}), 403
-
-    medico = Medico.query.get(id)
-    if not medico or medico.rol:
-        return jsonify({"mensaje": "Médico no encontrado"}), 404
-
-    try:
-        db.session.delete(medico)
-        db.session.commit()
-        return jsonify({"mensaje": "Médico eliminado"}), 200
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"mensaje": f"Error al eliminar médico: {str(e)}"}), 500
-
 
 @admin_bp.route("/api/admin/toggle_medico/<int:id>", methods=["PATCH"])
 @jwt_required()

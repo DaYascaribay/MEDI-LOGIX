@@ -5,3 +5,5 @@ Flask-SQLAlchemy
 pymysql
 Werkzeug
 cryptography
+pytest
+pytest-flask

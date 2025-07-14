@@ -13,18 +13,20 @@ def activar_claves_foraneas_sqlite(dbapi_connection, connection_record):
         cursor.execute("PRAGMA foreign_keys=ON")
         cursor.close()
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
-    app.config.from_object(Config)
 
-    # Activar CORS para todas las rutas y orígenes
+    # Si se pasa una configuración para test, úsala
+    if test_config:
+        app.config.update(test_config)
+    else:
+        app.config.from_object(Config)
+
     CORS(app, resources={r"/*": {"origins": "*"}})
-
-    # Inicializar extensiones
     db.init_app(app)
     jwt.init_app(app)
 
-    # Importar y registrar Blueprints
+    # Blueprints
     from routes.auth_routes import auth_bp
     from routes.patient_routes import patient_bp
     from routes.case_routes import case_bp
@@ -35,7 +37,9 @@ def create_app():
     app.register_blueprint(case_bp, url_prefix="/api/case")
     app.register_blueprint(admin_bp)
 
+
     return app
+
 
 # Ejecutar servidor directamente
 if __name__ == "__main__":
