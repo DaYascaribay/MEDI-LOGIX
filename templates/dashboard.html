@@ -107,58 +107,58 @@
     </div>
 
     <!-- Modal Editar Paciente -->
-    <div id="editPatientModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeEditModal()">&times;</span>
-            <div class="modal-header">
-                <div class="circle-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" fill="black">
-                        <path d="M0 0h24v24H0z" fill="none"/>
-                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
-                    </svg>
-                </div>
-                <h2>Editar Paciente</h2>
+<div id="editPatientModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <div class="modal-header">
+            <div class="circle-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" fill="black">
+                    <path d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+                </svg>
             </div>
-            <form class="modal-form">
-                <label>Cédula/Pasaporte</label>
-                <input class="input1" type="text" value="1711576786" readonly>
-
-                <label>Nombres</label>
-                <input class="input1" type="text" placeholder="Ej: Pedro Pascal" readonly>
-                <label>Apellidos</label>
-                <input class="input1" type="text" placeholder="Ej: Pereira Ríos" readonly>
-
-                <div class="form-row">
-                    <div>
-                        <label>Fecha de Nacimiento</label>
-                        <input type="date" value="1980-01-01" readonly class="input1">
-                    </div>
-                    <div>
-                        <label>Sexo</label>
-                        <br>
-                        <select required class="input1">
-                            <option value="">Seleccione</option>
-                            <option value="M">M</option>
-                            <option value="F">F</option>
-                        </select>
-
-                    </div>
-                </div>
-
-                <label>Teléfono</label>
-                <input class="input1" type="text" value="0969456489">
-
-                <label>Correo Electrónico</label>
-                <input class="input1" type="email" value="ejemplo@correo.com">
-
-                <div class="button-group">
-                    <button type="button" class="delete-btn" id="btnEliminarPaciente">Eliminar</button>
-
-                    <button type="submit" class="save-btn">Guardar</button>
-                </div>
-            </form>
+            <h2>Editar Paciente</h2>
         </div>
+        <form class="modal-form" id="editPatientForm">
+            <label>Cédula/Pasaporte</label>
+            <input class="input1" type="text" id="edit-cedula" readonly>
+
+            <label>Nombres</label>
+            <input class="input1" type="text" id="edit-nombres" required>
+
+            <label>Apellidos</label>
+            <input class="input1" type="text" id="edit-apellidos" required>
+
+            <div class="form-row">
+                <div>
+                    <label>Fecha de Nacimiento</label>
+                    <input type="date" id="edit-fecha" class="input1" required>
+                </div>
+                <div>
+                    <label>Sexo</label>
+                    <br>
+                    <select required class="input1" id="edit-sexo">
+                        <option value="">Seleccione</option>
+                        <option value="M">M</option>
+                        <option value="F">F</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>Teléfono</label>
+            <input class="input1" type="text" id="edit-telefono" required>
+
+            <label>Correo Electrónico</label>
+            <input class="input1" type="email" id="edit-correo" required>
+
+            <div class="button-group">
+                <button type="button" class="delete-btn" id="btnEliminarPaciente">Eliminar</button>
+                <button type="submit" class="save-btn">Guardar</button>
+            </div>
+        </form>
     </div>
+</div>
+
 
     <!-- Modal Añadir Caso -->
     <div id="addCaseModal" class="modal">
@@ -425,21 +425,22 @@ function cargarDatosEnModalEdicion() {
 
     const cedula = icon.dataset.cedula || '';
     const nombres = icon.dataset.nombres || '';
-    const apellidos = icon.dataset.apellidos || '';  // <- Te faltaba esta línea
+    const apellidos = icon.dataset.apellidos || '';
     const fecha = icon.dataset.fecha || '';
     const sexo = icon.dataset.sexo || '';
     const telefono = icon.dataset.telefono || '';
     const correo = icon.dataset.correo || '';
 
     const modal = document.getElementById("editPatientModal");
-    modal.querySelectorAll("input")[0].value = cedula;
-    modal.querySelectorAll("input")[1].value = nombres;
-    modal.querySelectorAll("input")[2].value = apellidos;  // <- ahora correcto
-    modal.querySelector("input[type='date']").value = fecha;
-    modal.querySelector("select").value = sexo;
-    modal.querySelector("input[type='text']:not([readonly])").value = telefono;
-    modal.querySelector("input[type='email']").value = correo;
+    modal.querySelector('input[type="text"][readonly]').value = cedula;
+    modal.querySelector('#edit-nombres').value = nombres;
+    modal.querySelector('#edit-apellidos').value = apellidos;
+    modal.querySelector('input[type="date"]').value = fecha;
+    modal.querySelector('select').value = sexo;
+    modal.querySelector('#edit-telefono').value = telefono;
+    modal.querySelector('#edit-correo').value = correo;
 }
+
 
 
 
@@ -448,17 +449,27 @@ document.querySelector('#editPatientModal form').addEventListener('submit', asyn
 
     const modal = document.getElementById("editPatientModal");
 
-    const cedula = modal.querySelector('input[readonly][type="text"]').value.trim();
-    const telefono = modal.querySelector('input[type="text"]:not([readonly])').value.trim();
-    const correo = modal.querySelector('input[type="email"]').value.trim();
+    const cedula = modal.querySelector('#edit-cedula').value.trim();
+    const nombres = modal.querySelector('#edit-nombres').value.trim();
+    const apellidos = modal.querySelector('#edit-apellidos').value.trim();
+    const fecha_nac = modal.querySelector('#edit-fecha').value;
+    const sexo = modal.querySelector('#edit-sexo').value;
+    const telefono = modal.querySelector('#edit-telefono').value.trim();
+    const correo = modal.querySelector('#edit-correo').value.trim();
 
     // Validaciones
     const telefonoRegex = /^\d{7,10}$/;
+    const correoRegex = /^\S+@\S+\.\S+$/;
+    const nombreRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+
+    if (!nombreRegex.test(nombres) || !nombreRegex.test(apellidos)) {
+        return mostrarAlerta("Nombres y apellidos solo deben contener letras y espacios.", true);
+    }
 
     if (!telefonoRegex.test(telefono)) {
         return mostrarAlerta("El teléfono debe tener entre 7 y 10 dígitos numéricos.", true);
     }
-    if (!/\S+@\S+\.\S+/.test(correo)) {
+    if (!correoRegex.test(correo)) {
         return mostrarAlerta("El correo electrónico no tiene un formato válido.", true);
     }
 
@@ -466,6 +477,7 @@ document.querySelector('#editPatientModal form').addEventListener('submit', asyn
     if (!token) return mostrarAlerta("Sesión no válida", true);
 
     try {
+        // Obtener ID del paciente
         const resBuscar = await fetch(`http://localhost:777/api/patient/search/${cedula}`, {
             method: "GET",
             headers: {
@@ -478,13 +490,21 @@ document.querySelector('#editPatientModal form').addEventListener('submit', asyn
 
         const idPaciente = paciente.id;
 
+        // Enviar actualización completa (excepto cédula)
         const resUpdate = await fetch(`http://localhost:777/api/patient/update/${idPaciente}`, {
             method: "PUT",
             headers: {
                 "Authorization": "Bearer " + token,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ telefono, correo })
+            body: JSON.stringify({
+                nombres,
+                apellidos,
+                fecha_nac,
+                sexo,
+                telefono,
+                correo
+            })
         });
 
         const resultado = await resUpdate.json();
@@ -492,15 +512,11 @@ document.querySelector('#editPatientModal form').addEventListener('submit', asyn
         if (resUpdate.ok) {
             mostrarAlerta("Paciente actualizado correctamente");
 
-            const sexo = modal.querySelector('select').value;
-            const nombres = modal.querySelector('input[readonly][type="text"]:nth-of-type(2)').value;
-            const apellidos = modal.querySelector('input[readonly][type="text"]:nth-of-type(3)').value;
-
             actualizarPanelPaciente({
                 cedula,
                 nombres,
                 apellidos,
-                fecha_nac: paciente.fecha_nac,
+                fecha_nac,
                 sexo,
                 telefono,
                 correo
@@ -515,6 +531,7 @@ document.querySelector('#editPatientModal form').addEventListener('submit', asyn
         mostrarAlerta("Error al conectar con el servidor", true);
     }
 });
+
 
 
 document.getElementById("btnBuscarPaciente").addEventListener("click", async function () {
