@@ -89,3 +89,23 @@ medilogix/
 5. **Accede a la aplicación**
    - La API del backend estará disponible en `http://localhost:777`.
    - Las vistas web se pueden acceder desde `http://localhost:5000` (si estás corriendo `app.py` localmente fuera de Docker).
+
+---
+
+## 🧪 Pruebas Unitarias
+
+Para asegurar la calidad y el correcto funcionamiento de la aplicación, se han implementado pruebas unitarias con `pytest`.
+
+### Cómo Ejecutar las Pruebas
+
+1. **Asegúrate de que los contenedores estén en ejecución.**
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Ejecuta los tests**
+   Desde la carpeta `backend`, utiliza el siguiente comando para correr las pruebas dentro del contenedor de Flask:
+   ```bash
+   docker exec -it flask_backend pytest
+   ```
+   `pytest` descubrirá y ejecutará automáticamente las pruebas definidas en el directorio `backend/tests`.
