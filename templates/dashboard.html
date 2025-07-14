@@ -272,29 +272,41 @@ document.querySelector('#addPatientModal form').addEventListener('submit', async
     const telefono = form.querySelector('input[type="text"]:nth-of-type(4)').value.trim();
     const correo = form.querySelector('input[type="email"]').value.trim();
 
-    // Validaciones
+    // REGEX personalizados
     const nombreRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
-    const cedulaRegex = /^\d{9,10}$/;
+    const cedulaDiez = /^\d{10}$/;
+    const cedulaNueve = /^[A-Za-z]{3}\d{6}$/;
     const telefonoRegex = /^\d{7,10}$/;
+    const correoRegex = /^\S+@\S+\.\S+$/;
 
-    if (!cedulaRegex.test(cedula)) {
-        return alert("La cédula debe tener exactamente 10 dígitos.");
+    // Validación de cédula 9 o 10 caracteres
+    if (!(cedulaDiez.test(cedula) || cedulaNueve.test(cedula))) {
+        return alert("La cédula debe tener 10 dígitos numéricos o 3 letras seguidas de 6 dígitos (ej: ABC123456).");
     }
+
     if (!nombreRegex.test(nombres)) {
         return alert("El nombre solo debe contener letras y espacios.");
     }
+
     if (!nombreRegex.test(apellidos)) {
         return alert("El apellido solo debe contener letras y espacios.");
     }
+
     const hoy = new Date().toISOString().split("T")[0];
     if (!fechaRaw || fechaRaw > hoy) {
-        return alert("La fecha de nacimiento no puede estar vacía ni ser futura.");
+        return alert("La fecha de nacimiento no puede estar vacía ni ser una fecha futura.");
     }
+
+    if (!sexo) {
+        return alert("Debe seleccionar el sexo del paciente.");
+    }
+
     if (!telefonoRegex.test(telefono)) {
-        return alert("El teléfono debe tener entre 7 y 10 dígitos.");
+        return alert("El teléfono debe tener entre 7 y 10 dígitos numéricos.");
     }
-    if (!/\S+@\S+\.\S+/.test(correo)) {
-        return alert("El correo no tiene un formato válido.");
+
+    if (!correoRegex.test(correo)) {
+        return alert("El correo electrónico no tiene un formato válido.");
     }
 
     const fechaFormateada = new Date(fechaRaw).toISOString().split("T")[0];
@@ -325,9 +337,11 @@ document.querySelector('#addPatientModal form').addEventListener('submit', async
         const result = await res.json();
         if (res.ok) {
             mostrarAlerta("Paciente registrado correctamente");
+
             form.reset();
             form.querySelector("select").selectedIndex = 0;
             form.querySelector('input[type="date"]').value = "";
+
             closeModal();
             localStorage.removeItem("paciente_id");
             actualizarPanelPaciente({ ...data, id: result.id });
@@ -341,7 +355,6 @@ document.querySelector('#addPatientModal form').addEventListener('submit', async
         mostrarAlerta("Error al conectar con el servidor", true);
     }
 });
-
 
 
 // FUNCIONES AUXILIARES
@@ -375,7 +388,7 @@ function actualizarPanelPaciente(paciente) {
         </div>
         <p><strong>Teléfono</strong><br>${paciente.telefono || "No disponible"}</p>
         <p><strong>Correo electrónico</strong><br>${paciente.correo || "No disponible"}</p>
-        <p><strong>Número de historia clínica</strong><br>${paciente.historia_clinica || "No asignado"}</p>
+         <p><strong>Número de historia clínica</strong><br>HC-${Math.floor(Math.random() * 100000000)}</p>
     `;
 
     const editIcon = panel.querySelector(".edit-icon");
@@ -492,10 +505,16 @@ document.querySelector('#editPatientModal form').addEventListener('submit', asyn
 document.getElementById("btnBuscarPaciente").addEventListener("click", async function () {
     const cedulaInput = document.getElementById("searchCedula");
     const cedula = cedulaInput.value.trim();
-    const cedulaRegex = /^\d{10}$/;
 
-    if (!cedula) return alert("Ingrese una cédula para buscar");
-    if (!cedulaRegex.test(cedula)) return alert("La cédula debe contener exactamente 10 dígitos numéricos");
+    // Validaciones para cédula o código personalizado
+    const regex10Numeros = /^\d{10}$/;
+    const regex9Alfanumerico = /^[A-Za-z]{3}\d{6}$/;
+
+    if (!cedula) return alert("Ingrese una cédula o código para buscar");
+
+    if (!(regex10Numeros.test(cedula) || regex9Alfanumerico.test(cedula))) {
+        return alert("Ingrese una cédula válida (10 dígitos numéricos) o un código válido (3 letras seguidas de 6 números)");
+    }
 
     cedulaInput.value = "";
 
@@ -545,6 +564,7 @@ document.getElementById("btnBuscarPaciente").addEventListener("click", async fun
         alert("Error al buscar el paciente");
     }
 });
+
 
 function limpiarTablaCasos() {
     const tbody = document.querySelector(".cases-panel table tbody");

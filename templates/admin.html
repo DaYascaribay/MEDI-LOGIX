@@ -298,14 +298,23 @@ document.addEventListener("DOMContentLoaded", () => {
             return alert("Todos los campos son obligatorios");
         }
 
-        // VALIDACIONES PERSONALIZADAS
+        // ------------------ VALIDACIONES PERSONALIZADAS ------------------
         const nombreRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
-        const cedulaRegex = /^\d{9,10}$/;
         const telefonoRegex = /^\d{7,10}$/;
+        const correoRegex = /^\S+@\S+\.\S+$/;
         const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
 
-        if (!cedulaRegex.test(cedula)) {
-            return alert("La cédula debe tener exactamente 10 dígitos numéricos.");
+        function validarCedula(ced) {
+            if (ced.length === 10) {
+                return /^\d{10}$/.test(ced);
+            } else if (ced.length === 9) {
+                return /^[A-Za-z]{3}\d{6}$/.test(ced);
+            }
+            return false;
+        }
+
+        if (!validarCedula(cedula)) {
+            return alert("La cédula debe tener 10 dígitos numéricos o 3 letras seguidas de 6 dígitos (ej: ABC123456).");
         }
         if (!nombreRegex.test(nombres)) {
             return alert("El campo nombres solo debe contener letras y espacios.");
@@ -319,7 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!telefonoRegex.test(telefono)) {
             return alert("El teléfono debe contener entre 7 y 10 dígitos numéricos.");
         }
-        if (!/\S+@\S+\.\S+/.test(correo)) {
+        if (!correoRegex.test(correo)) {
             return alert("El correo electrónico no es válido.");
         }
         if (!passwordRegex.test(password)) {
@@ -330,6 +339,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return alert("La fecha de nacimiento no puede estar vacía ni ser una fecha futura.");
         }
 
+        // ------------------ ENVÍO ------------------
         const token = localStorage.getItem("token");
         if (!token) return alert("Sesión no válida");
 
