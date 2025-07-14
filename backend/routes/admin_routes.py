@@ -66,6 +66,17 @@ def crear_medico():
 
     if not all([cedula, password, nombres, apellidos, correo, especialidad, fecha_nacimiento, telefono]):
         return jsonify({"mensaje": "Faltan campos"}), 400
+    
+    # Verificar cédula única
+    if Medico.query.filter_by(cedula=cedula).first():
+        return jsonify({"mensaje": "La cédula ya está registrada"}), 409
+
+    # Verificar correo único
+    if Medico.query.filter_by(correo=correo).first():
+        return jsonify({"mensaje": "El correo ya está registrado"}), 409
+    
+    if Medico.query.filter_by(telefono=telefono).first():
+        return jsonify({"mensaje": "El número de teléfono ya está registrado"}), 409
 
     # Generar usuario como nombre.apellido en minúsculas
     base_usuario = f"{nombres.split()[0].lower()}.{apellidos.split()[0].lower()}"

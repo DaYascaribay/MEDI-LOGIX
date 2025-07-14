@@ -334,10 +334,22 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!passwordRegex.test(password)) {
             return alert("La contraseña debe tener al menos 6 caracteres, incluyendo una letra y un número.");
         }
-        const hoy = new Date().toISOString().split("T")[0];
-        if (!fecha_nacimiento || fecha_nacimiento > hoy) {
-            return alert("La fecha de nacimiento no puede estar vacía ni ser una fecha futura.");
+        if (!fecha_nacimiento) {
+            return alert("La fecha de nacimiento es obligatoria.");
         }
+
+        const nacimiento = new Date(fecha_nacimiento);
+        const hoyDate = new Date();
+        let edad = hoyDate.getFullYear() - nacimiento.getFullYear();
+        const m = hoyDate.getMonth() - nacimiento.getMonth();
+        if (m < 0 || (m === 0 && hoyDate.getDate() < nacimiento.getDate())) {
+            edad--;
+        }
+
+        if (edad < 18 || edad > 80) {
+            return alert("La edad debe estar entre 18 y 80 años.");
+        }
+
 
         // ------------------ ENVÍO ------------------
         const token = localStorage.getItem("token");
