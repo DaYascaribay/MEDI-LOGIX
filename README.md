@@ -64,20 +64,31 @@ medilogix/
 
 1. **Clona el repositorio**
    ```bash
-   git clone https://github.com/tu_usuario/medilogix.git
-   cd medilogix
+   git https://github.com/DaYascaribay/MEDI-LOGIX.git
    ```
 
-2. **Levanta los contenedores con Docker Compose**
+2. **Instalar librerias**
+   Desede la raíz del proyecto ejectuar:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Levanta los contenedores con Docker Compose**
    Desde la carpeta `backend`, ejecuta:
    ```bash
    docker-compose up --build
    ```
    Esto construirá la imagen de Flask y levantará tanto el servicio del backend como el de la base de datos.
 
+4. **Levantar el servicio FrontEnd**
+   Desede la raíz del proyecto ejectuar:
+   ```bash
+   python app.py
+   ```
+
 4. **Accede a la aplicación**
    - La API del backend estará disponible en `http://localhost:777`.
-   - Las vistas web se pueden acceder desde `http://localhost:5000` (si estás corriendo `app.py` localmente fuera de Docker).
+   - Las vistas web se pueden acceder desde `http://localhost:1019`.
 
 ---
 
