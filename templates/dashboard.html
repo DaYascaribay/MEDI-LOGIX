@@ -266,25 +266,43 @@ document.querySelector('#addPatientModal form').addEventListener('submit', async
 
     const cedula = form.querySelector('input[type="text"]:nth-of-type(1)').value.trim();
     const nombres = form.querySelector('input[type="text"]:nth-of-type(2)').value.trim();
+    const apellidos = form.querySelector('input[type="text"]:nth-of-type(3)').value.trim();
     const fechaRaw = form.querySelector('input[type="date"]').value;
     const sexo = form.querySelector('select').value;
-    const telefono = form.querySelector('input[type="text"]:nth-of-type(3)').value.trim();
+    const telefono = form.querySelector('input[type="text"]:nth-of-type(4)').value.trim();
     const correo = form.querySelector('input[type="email"]').value.trim();
 
-    if (!cedula || !nombres || !fechaRaw || !sexo || !telefono || !correo) {
-        return alert("Todos los campos son obligatorios");
+    // Validaciones
+    const nombreRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+    const cedulaRegex = /^\d{9,10}$/;
+    const telefonoRegex = /^\d{7,10}$/;
+
+    if (!cedulaRegex.test(cedula)) {
+        return alert("La cédula debe tener exactamente 10 dígitos.");
+    }
+    if (!nombreRegex.test(nombres)) {
+        return alert("El nombre solo debe contener letras y espacios.");
+    }
+    if (!nombreRegex.test(apellidos)) {
+        return alert("El apellido solo debe contener letras y espacios.");
+    }
+    const hoy = new Date().toISOString().split("T")[0];
+    if (!fechaRaw || fechaRaw > hoy) {
+        return alert("La fecha de nacimiento no puede estar vacía ni ser futura.");
+    }
+    if (!telefonoRegex.test(telefono)) {
+        return alert("El teléfono debe tener entre 7 y 10 dígitos.");
+    }
+    if (!/\S+@\S+\.\S+/.test(correo)) {
+        return alert("El correo no tiene un formato válido.");
     }
 
-    let fechaFormateada;
-    try {
-        fechaFormateada = new Date(fechaRaw).toISOString().split("T")[0];
-    } catch {
-        return alert("Fecha inválida");
-    }
+    const fechaFormateada = new Date(fechaRaw).toISOString().split("T")[0];
 
     const data = {
         cedula,
         nombres,
+        apellidos,
         fecha_nac: fechaFormateada,
         sexo,
         telefono,
@@ -307,31 +325,23 @@ document.querySelector('#addPatientModal form').addEventListener('submit', async
         const result = await res.json();
         if (res.ok) {
             mostrarAlerta("Paciente registrado correctamente");
-
-            // Limpiar formulario
             form.reset();
-            const select = form.querySelector("select");
-            if (select) select.selectedIndex = 0;
-            const dateInput = form.querySelector("input[type='date']");
-            if (dateInput) dateInput.value = "";
-
+            form.querySelector("select").selectedIndex = 0;
+            form.querySelector('input[type="date"]').value = "";
             closeModal();
             localStorage.removeItem("paciente_id");
-            limpiarTablaCasos();
             actualizarPanelPaciente({ ...data, id: result.id });
-            localStorage.setItem("paciente_id", result.id);  // <-- importante
-
-
+            localStorage.setItem("paciente_id", result.id);
         } else {
-            mostrarAlerta(result.mensaje || "Error al registrar paciente");
-
+            mostrarAlerta(result.mensaje || "Error al registrar paciente", true);
         }
 
     } catch (err) {
         console.error(err);
-        mostrarAlerta("Error al conectar con el servidor");
+        mostrarAlerta("Error al conectar con el servidor", true);
     }
 });
+
 
 
 // FUNCIONES AUXILIARES
@@ -414,7 +424,15 @@ document.querySelector('#editPatientModal form').addEventListener('submit', asyn
     const telefono = modal.querySelector('input[type="text"]:not([readonly])').value.trim();
     const correo = modal.querySelector('input[type="email"]').value.trim();
 
-    if (!telefono || !correo) return mostrarAlerta("Teléfono y correo son obligatorios", true);
+    // Validaciones
+    const telefonoRegex = /^\d{7,10}$/;
+
+    if (!telefonoRegex.test(telefono)) {
+        return mostrarAlerta("El teléfono debe tener entre 7 y 10 dígitos numéricos.", true);
+    }
+    if (!/\S+@\S+\.\S+/.test(correo)) {
+        return mostrarAlerta("El correo electrónico no tiene un formato válido.", true);
+    }
 
     const token = localStorage.getItem("token");
     if (!token) return mostrarAlerta("Sesión no válida", true);
@@ -448,10 +466,12 @@ document.querySelector('#editPatientModal form').addEventListener('submit', asyn
 
             const sexo = modal.querySelector('select').value;
             const nombres = modal.querySelector('input[readonly][type="text"]:nth-of-type(2)').value;
+            const apellidos = modal.querySelector('input[readonly][type="text"]:nth-of-type(3)').value;
 
             actualizarPanelPaciente({
                 cedula,
                 nombres,
+                apellidos,
                 fecha_nac: paciente.fecha_nac,
                 sexo,
                 telefono,
@@ -472,7 +492,10 @@ document.querySelector('#editPatientModal form').addEventListener('submit', asyn
 document.getElementById("btnBuscarPaciente").addEventListener("click", async function () {
     const cedulaInput = document.getElementById("searchCedula");
     const cedula = cedulaInput.value.trim();
+    const cedulaRegex = /^\d{10}$/;
+
     if (!cedula) return alert("Ingrese una cédula para buscar");
+    if (!cedulaRegex.test(cedula)) return alert("La cédula debe contener exactamente 10 dígitos numéricos");
 
     cedulaInput.value = "";
 
@@ -496,14 +519,11 @@ document.getElementById("btnBuscarPaciente").addEventListener("click", async fun
                 </div>
                 <p style="text-align: center; color: #666; margin-top: 1rem;">${data.mensaje || "No se encontró el paciente"}</p>
             `;
-
             limpiarTablaCasos();
         } else {
             actualizarPanelPaciente(data);
             limpiarTablaCasos();
-
             localStorage.setItem("paciente_id", data.id);
-
 
             try {
                 const resCasos = await fetch(`http://localhost:777/api/case/list/${data.id}`, {
@@ -526,7 +546,6 @@ document.getElementById("btnBuscarPaciente").addEventListener("click", async fun
     }
 });
 
-
 function limpiarTablaCasos() {
     const tbody = document.querySelector(".cases-panel table tbody");
     if (tbody) {
@@ -545,15 +564,27 @@ document.querySelector('#addCaseForm').addEventListener('submit', async function
     if (!paciente_id) return mostrarAlerta("Debe seleccionar un paciente antes de registrar el caso");
 
     const inputs = document.querySelectorAll('#addCaseForm .input1');
-    const fecha = document.getElementById("fechaCasoHoy").value;
+    const fecha = document.getElementById("fechaCasoHoy").value.trim();
     const diagnostico = inputs[0].value.trim();
-    const medico = medicoActual; 
+    const medico = medicoActual;
     const tratamiento = inputs[2].value.trim();
     const observaciones = inputs[3].value.trim();
 
+    // Validaciones
+    const textoLibreRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s.,()/-]{3,}$/;
+    const hoy = new Date().toISOString().split("T")[0];
 
-    if (!fecha || !diagnostico || !tratamiento || !observaciones) {
-        return alert("Todos los campos son obligatorios");
+    if (!fecha || fecha > hoy) {
+        return alert("La fecha debe ser válida y no futura.");
+    }
+    if (!textoLibreRegex.test(diagnostico)) {
+        return alert("El diagnóstico debe tener al menos 3 caracteres y contener solo texto válido.");
+    }
+    if (!textoLibreRegex.test(tratamiento)) {
+        return alert("El tratamiento debe tener al menos 3 caracteres y contener solo texto válido.");
+    }
+    if (observaciones && observaciones.length > 0 && !textoLibreRegex.test(observaciones)) {
+        return alert("Las observaciones contienen caracteres no válidos o son demasiado cortas.");
     }
 
     const data = {
@@ -611,7 +642,6 @@ document.querySelector('#addCaseForm').addEventListener('submit', async function
         mostrarAlerta("Error al conectar con el servidor");
     }
 });
-
 
 function mostrarCasosMedicos(casos) {
     const tbody = document.querySelector(".cases-panel table tbody");
