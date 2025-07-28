@@ -179,16 +179,16 @@
 
 
                 <label>Diagnóstico</label>
-                <input class="input1" type="text" placeholder="Ej: Hipertensión arterial" required>
+                <input class="input1" type="text" id="diagnostico" placeholder="Ej: Hipertensión arterial" required>
 
                 <label>Médico tratante</label>
                 <input class="input1" type="text" readonly>
 
                 <label>Tratamiento</label>
-                <input class="input1" type="text" placeholder="Ej: Losartán 50mg diarios" required>
+                <input class="input1" type="text" id="tratamiento" placeholder="Ej: Losartán 50mg diarios" required>
 
                 <label>Observaciones</label>
-                <input class="input1" type="text" placeholder="Ej: Control mensual">
+                <input class="input1" type="text" id="observaciones" placeholder="Ej: Control mensual">
 
                 <div class="button-group">
                     <button type="submit" class="save-btn">Guardar</button>
@@ -615,12 +615,11 @@ document.querySelector('#addCaseForm').addEventListener('submit', async function
     const paciente_id = localStorage.getItem("paciente_id");
     if (!paciente_id) return mostrarAlerta("Debe seleccionar un paciente antes de registrar el caso");
 
-    const inputs = document.querySelectorAll('#addCaseForm .input1');
     const fecha = document.getElementById("fechaCasoHoy").value.trim();
-    const diagnostico = inputs[0].value.trim();
+    const diagnostico = document.getElementById("diagnostico").value;
     const medico = medicoActual;
-    const tratamiento = inputs[2].value.trim();
-    const observaciones = inputs[3].value.trim();
+    const tratamiento = document.getElementById("tratamiento").value;
+    const observaciones = document.getElementById("observaciones").value;
 
     // Validaciones
     const textoLibreRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s.,()/-]{3,}$/;
